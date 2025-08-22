@@ -1,0 +1,20 @@
+<div class="add-book">
+    <form [formGroup]="addBookForm" (ngSubmit)="onSubmit()">
+        <label for="title">Title:</label>
+        <input id="title" type="text" formControlName="title">
+
+        <label for="author">Author:</label>
+        <input id="author" type="text" formControlName="author">
+
+        <label for="genre">Genre:</label>
+        <input id="genre" type="text" formControlName="genre">
+
+        <label for="quantity">Quantity:</label>
+        <input id="quantity" type="number" formControlName="quantity">
+
+        <label for="imageUrl">ImageUrl:</label>
+        <input id="imageUrl" type="text" formControlName="imageUrl">
+
+        <button type="submit">Submit</button>
+    </form>
+</div>

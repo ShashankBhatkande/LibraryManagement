@@ -1,0 +1,63 @@
+<div class="add-user">
+  <button [routerLink]="['/add-user']">Login</button>
+</div>
+<div class="filters">
+  <input type="text" [formControl]="searchControl" placeholder="Search by title" />
+</div>
+<div class="addBook">
+  <button mat-raised-button color="primary" [routerLink]="['/add-book']">
+    Add Book
+  </button>
+</div>
+<div>
+  <button (click)="setViewMode('grid')">Grid</button>
+  <button (click)="setViewMode('list')">List</button>
+</div>
+
+<mat-form-field>
+  <mat-label>Genres</mat-label>
+  <mat-select [formControl]="genreControl" multiple>
+    <mat-option *ngFor="let g of genres" [value]="g">{{ g }}</mat-option>
+  </mat-select>
+</mat-form-field>
+
+<mat-form-field>
+  <mat-label>Authors</mat-label>
+  <mat-select [formControl]="authorControl" multiple>
+    <mat-option *ngFor="let a of authors" [value]="a">{{ a }}</mat-option>
+  </mat-select>
+</mat-form-field>
+
+<div *ngIf="viewMode === 'grid'" class="grid-view">
+  <div *ngFor="let book of books" class="book-card">
+    <img *ngIf="book.imageUrl" [src]="book.imageUrl" alt="{{ book.title }}" class="book-image" />
+    <h3>{{ book.title }}</h3>
+    <p><strong>Genre:</strong> {{ book.genre }}</p>
+    <p><strong>Author:</strong> {{ book.author }}</p>
+    <p><strong>Quantity:</strong> {{ book.quantity }}</p>
+    <div class="updateBook">
+      <button mat-raised-button color="primary" [routerLink]="['/update-book', book.id]">
+        Update Book
+      </button>
+      <button mat-raised-button color="warn" (click)="onDelete(book)">
+        Delete Book
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="viewMode === 'list'" class="list-view">
+  <div *ngFor="let book of books" class="book-row">
+    <img *ngIf="book.imageUrl" [src]="book.imageUrl" alt="{{ book.title }}" class="book-thumb" />
+    <strong>{{ book.title }}</strong> - {{ book.genre }} - {{ book.author }} ({{ book.quantity }} available)
+
+    <div class="updateBook">
+      <button mat-raised-button color="primary" [routerLink]="['/update-book', book.id]">
+        Update Book
+      </button>
+      <button mat-raised-button color="warn" (click)="onDelete(book)">
+        Delete Book
+      </button>
+    </div>
+  </div>
+</div>

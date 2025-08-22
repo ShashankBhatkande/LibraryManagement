@@ -1,0 +1,54 @@
+# =========================
+# === Frontend (Angular) ===
+# =========================
+/librarysystem/frontend/dist
+/librarysystem/frontend/tmp
+/librarysystem/frontend/out-tsc
+/librarysystem/frontend/bazel-out
+/librarysystem/frontend/node_modules
+/librarysystem/frontend/npm-debug.log
+/librarysystem/frontend/yarn-error.log
+/librarysystem/frontend/.angular/cache
+/librarysystem/frontend/.sass-cache
+/librarysystem/frontend/coverage
+/librarysystem/frontend/libpeerconnection.log
+/librarysystem/frontend/testem.log
+/librarysystem/frontend/typings
+/librarysystem/frontend/.idea
+/librarysystem/frontend/.project
+/librarysystem/frontend/.classpath
+/librarysystem/frontend/.c9
+/librarysystem/frontend/.settings
+/librarysystem/frontend/.sublime-workspace
+/librarysystem/frontend/.vscode/*
+!/librarysystem/frontend/.vscode/settings.json
+!/librarysystem/frontend/.vscode/tasks.json
+!/librarysystem/frontend/.vscode/launch.json
+!/librarysystem/frontend/.vscode/extensions.json
+/librarysystem/frontend/.history
+/librarysystem/frontend/.DS_Store
+/librarysystem/frontend/Thumbs.db
+
+# =========================
+# === Backend (Spring Boot / Java) ===
+# =========================
+/librarysystem/target
+/librarysystem/build
+/librarysystem/out
+/librarysystem/*.log
+/librarysystem/*.class
+/librarysystem/.idea
+/librarysystem/.vscode
+/librarysystem/.settings
+/librarysystem/.classpath
+/librarysystem/.project
+/librarysystem/.DS_Store
+/librarysystem/Thumbs.db
+
+# =========================
+# === OS / Misc ===
+# =========================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
