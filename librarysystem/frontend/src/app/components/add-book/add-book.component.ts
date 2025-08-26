@@ -29,7 +29,7 @@ export class AddBookComponent {
             this.bookService.saveBook(newBook).subscribe ({
                 next: (data) => {
                     console.log("Book saved successfully: ", data);
-                    this.router.navigate(['/']);
+                    this.router.navigate(['/books']);
                 },
                 error: (err) =>  console.error('Error saving book: ', err)
             });

@@ -1,19 +1,19 @@
 <div class="user-form">
     <form [formGroup]="addUserForm" (ngSubmit)="onSubmit()">
-        <label for="firstname">Name:</label>
+        <label for="firstname">First Name: </label>
         <input id="firstname" type="text" formControlName="firstname">
 
-        <label for="lastname">Name:</label>
+        <label for="lastname">Last Name: </label>
         <input id="lastname" type="text" formControlName="lastname">
 
-        <label for="email">Email:</label>
-        <input id="email" type="text" formControlName="email">
+        <label for="email">Email: </label>
+        <input id="email" type="email" formControlName="email">
 
-        <label for="mobile">Mobile:</label>
+        <label for="mobile">Mobile: </label>
         <input id="mobile" type="text" formControlName="mobile">
 
-        <label for="password">Password:</label>
-        <input id="password" type="text" formControlName="password">
+        <label for="password">Password: </label>
+        <input id="password" type="password" formControlName="password">
 
         <label for="role">Role:</label>
         <select id="role" formControlName="role">

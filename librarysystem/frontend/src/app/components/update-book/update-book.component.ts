@@ -11,7 +11,7 @@ import { CommonModule } from "@angular/common";
     templateUrl: './update-book.component.html',
     styleUrls: ['./update-book.component.css']
 })
-export class updateBookComponent{
+export class UpdateBookComponent{
     updateBookForm: FormGroup;
     constructor(private fb: FormBuilder, private bookService: BookService, private router: Router, private route: ActivatedRoute) {
         this.updateBookForm = this.fb.group({
@@ -40,7 +40,7 @@ export class updateBookComponent{
             this.bookService.updateBook(id, updateBook).subscribe ({
                 next: (data) => {
                     console.log("Book updated successfully: ", data);
-                    this.router.navigate(['/']);
+                    this.router.navigate(['/books']);
                 },
                 error: (err) => console.log('Error book updating. ', err)
             });

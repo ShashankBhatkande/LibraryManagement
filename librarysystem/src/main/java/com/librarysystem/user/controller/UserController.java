@@ -28,8 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
     private final UserService userService;
     @PostMapping("/saveUser")
-    public void saveUser(@RequestBody User user) {
-        userService.saveUser(user);
+    public User saveUser(@RequestBody User user) {
+        return userService.saveUser(user);
     }
 
     @GetMapping("/getBooks")

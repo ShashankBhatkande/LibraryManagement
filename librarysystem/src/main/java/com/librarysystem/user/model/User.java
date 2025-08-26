@@ -1,5 +1,6 @@
 package com.librarysystem.user.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,8 +24,12 @@ public class User {
 
     private String firstname;
     private String lastname;
+    
+    @Column(unique = true, nullable = false)
     private String email;
     private String mobile;
+
+    @Column(nullable = false)
     private String password;
 
     private String role;

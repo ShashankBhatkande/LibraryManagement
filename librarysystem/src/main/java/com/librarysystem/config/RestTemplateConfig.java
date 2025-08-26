@@ -10,6 +10,16 @@ public class RestTemplateConfig {
 
     @Bean
     public RestTemplate restTemplate() {
-        return new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+        RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+
+        restTemplate.getInterceptors().add((request, body, execution) -> {
+            String token = TokenUtils.getCurrentToken();
+            if(token != null) {
+                request.getHeaders().add("Authorization", "Bearer " + token);
+            }
+            return execution.execute(request, body);
+        });
+
+        return restTemplate;
     }
 }

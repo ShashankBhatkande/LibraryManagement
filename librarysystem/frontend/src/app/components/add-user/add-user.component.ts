@@ -1,10 +1,9 @@
 import { CommonModule } from "@angular/common";
 import { Component } from "@angular/core";
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
-import { UserService } from "../../services/user.service";
-import { P } from "@angular/cdk/keycodes";
 import { User } from "../../models/user.model";
 import { Router } from "@angular/router";
+import { AuthService } from "../../services/auth.service";
 
 @Component({
     standalone: true,
@@ -12,13 +11,13 @@ import { Router } from "@angular/router";
     templateUrl: './add-user.component.html',
     styleUrls: ['./add-user.component.css']
 })
-export class addUserComponent {
+export class AddUserComponent {
     addUserForm: FormGroup;
-    constructor(private userService: UserService, private fb: FormBuilder, private router: Router) {
+    constructor(private authService: AuthService, private fb: FormBuilder, private router: Router) {
         this.addUserForm = this.fb.group({
             firstname: ['', Validators.required],
             lastname: ['', Validators.required],
-            email:['', Validators.required],
+            email:['', [Validators.required, Validators.email]],
             mobile:['', Validators.required],
             password:['', Validators.required],
             role:['', Validators.required]
@@ -28,7 +27,7 @@ export class addUserComponent {
     onSubmit() {
         if(this.addUserForm.valid) {
             const newUser: User = this.addUserForm.value;
-            this.userService.saveUser(newUser).subscribe({
+            this.authService.saveUser(newUser).subscribe({
                 next: (data) => {
                     console.log("User saved successfully: ", data);
                     this.router.navigate(['/']);
