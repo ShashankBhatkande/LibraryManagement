@@ -1,27 +1,40 @@
-<div class="user-form">
+<div class="register-container">
+    <h2>Register</h2>
     <form [formGroup]="addUserForm" (ngSubmit)="onSubmit()">
-        <label for="firstname">First Name: </label>
-        <input id="firstname" type="text" formControlName="firstname">
+        <div class="input-box">
+            <label for="firstname">First Name: </label>
+            <input id="firstname" type="text" formControlName="firstname">
+        </div>
 
-        <label for="lastname">Last Name: </label>
-        <input id="lastname" type="text" formControlName="lastname">
+        <div class="input-box">
+            <label for="lastname">Last Name: </label>
+            <input id="lastname" type="text" formControlName="lastname">
+        </div>
 
-        <label for="email">Email: </label>
-        <input id="email" type="email" formControlName="email">
+        <div class="input-box">
+            <label for="email">Email: </label>
+            <input id="email" type="email" formControlName="email">
+        </div>
 
-        <label for="mobile">Mobile: </label>
-        <input id="mobile" type="text" formControlName="mobile">
+        <div class="input-box">
+            <label for="mobile">Mobile: </label>
+            <input id="mobile" type="text" formControlName="mobile">
+        </div>
 
-        <label for="password">Password: </label>
-        <input id="password" type="password" formControlName="password">
+        <div class="input-box">
+            <label for="password">Password: </label>
+            <input id="password" type="password" formControlName="password">
+        </div>
 
-        <label for="role">Role:</label>
-        <select id="role" formControlName="role">
-            <option value="admin">Admin</option>
-            <option value="librarian">Librarian</option>
-            <option value="user">User</option>
-        </select>
+        <div class="input-box">
+            <label for="role">Role:</label>
+            <select id="role" formControlName="role">
+                <option value="ADMIN">Admin</option>
+                <option value="LIBRARIAN">Librarian</option>
+                <option value="USER">User</option>
+            </select>
+        </div>
 
-        <button type="submit">Submit</button>
+        <button class="btn" type="submit">Submit</button>
     </form>
 </div>

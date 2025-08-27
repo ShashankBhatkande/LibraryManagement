@@ -6,7 +6,8 @@ import { AuthService } from "../../services/auth.service";
 @Component({
     standalone: true,
     imports: [ FormsModule, RouterModule ],
-    templateUrl: './login-user.component.html'
+    templateUrl: './login-user.component.html',
+    styleUrls: ['/login-user.component.scss']
 })
 export class LoginUserComponent {
     email = '';

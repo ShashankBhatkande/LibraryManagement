@@ -9,7 +9,7 @@ import { AuthService } from "../../services/auth.service";
     standalone: true,
     imports: [CommonModule, FormsModule, ReactiveFormsModule],
     templateUrl: './add-user.component.html',
-    styleUrls: ['./add-user.component.css']
+    styleUrls: ['./add-user.component.scss']
 })
 export class AddUserComponent {
     addUserForm: FormGroup;

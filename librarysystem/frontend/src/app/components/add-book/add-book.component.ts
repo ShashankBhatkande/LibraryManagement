@@ -9,7 +9,7 @@ import { Router } from "@angular/router";
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule],
     templateUrl: './add-book.component.html',
-    styleUrls : ['./add-book.component.css']
+    styleUrls : ['./add-book.component.scss']
 })
 export class AddBookComponent {
     addBookForm: FormGroup;

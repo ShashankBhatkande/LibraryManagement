@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +28,9 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
     private final UserService userService;
+
     @PostMapping("/saveUser")
+    @PreAuthorize("hasRole('ADMIN')")
     public User saveUser(@RequestBody User user) {
         return userService.saveUser(user);
     }
@@ -47,6 +50,7 @@ public class UserController {
         return userService.fetchAuthors();
     }
     @PostMapping("/saveBook")
+    @PreAuthorize("hasRole('LIBRARIAN')")
     public void saveBook(@RequestBody Books book) {
         userService.saveBook(book);
     }
@@ -57,6 +61,7 @@ public class UserController {
     }
 
     @PatchMapping("/updateBook")
+    @PreAuthorize("hasRole('LIBRARIAN')")
     public ResponseEntity<Map<String, String>> updateBook(@RequestParam Long id, @RequestBody Map<String, Object> updates) {
         log.info("Update book log inside User Controller with id {}", id);
         ResponseEntity<String> response = userService.updateBook(id, updates);
@@ -68,6 +73,7 @@ public class UserController {
     }
 
     @DeleteMapping("/deleteBook")
+    @PreAuthorize("hasRole('LIBRARIAN')")
     public ResponseEntity<Map<String, String>> deleteBook(@RequestParam Long id) {
         ResponseEntity<String> response = userService.deleteBook(id);
         if(response.getStatusCode().is2xxSuccessful()) {

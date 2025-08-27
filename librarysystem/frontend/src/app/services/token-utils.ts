@@ -2,7 +2,8 @@ import { jwtDecode } from 'jwt-decode';
 export interface JwtPayload {
     exp: number;
     iat?: number;
-    sub?: string    
+    sub?: string;
+    roles?: string[];
 }
 
 export function isTokenExpired(token: string | null): boolean {

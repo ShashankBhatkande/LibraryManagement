@@ -2,7 +2,7 @@
   <input type="text" [formControl]="searchControl" placeholder="Search by title" />
 </div>
 <div class="addBook">
-  <button mat-raised-button color="primary" [routerLink]="['/add-book']">
+  <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-raised-button color="primary" [routerLink]="['/add-book']">
     Add Book
   </button>
 </div>
@@ -33,10 +33,10 @@
     <p><strong>Author:</strong> {{ book.author }}</p>
     <p><strong>Quantity:</strong> {{ book.quantity }}</p>
     <div class="updateBook">
-      <button mat-raised-button color="primary" [routerLink]="['/update-book', book.id]">
+      <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-raised-button color="primary" [routerLink]="['/update-book', book.id]">
         Update Book
       </button>
-      <button mat-raised-button color="warn" (click)="onDelete(book)">
+      <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-raised-button color="warn" (click)="onDelete(book)">
         Delete Book
       </button>
     </div>
@@ -49,10 +49,10 @@
     <strong>{{ book.title }}</strong> - {{ book.genre }} - {{ book.author }} ({{ book.quantity }} available)
 
     <div class="updateBook">
-      <button mat-raised-button color="primary" [routerLink]="['/update-book', book.id]">
+      <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-raised-button color="primary" [routerLink]="['/update-book', book.id]">
         Update Book
       </button>
-      <button mat-raised-button color="warn" (click)="onDelete(book)">
+      <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-raised-button color="warn" (click)="onDelete(book)">
         Delete Book
       </button>
     </div>

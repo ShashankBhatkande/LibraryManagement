@@ -8,12 +8,13 @@ import { merge } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { RouterLink } from '@angular/router';
+import { RoleService } from '../../services/role.service';
 
 @Component({
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, RouterLink],
   templateUrl: './book-list.component.html',
-  styleUrls: ['./book-list.component.css']
+  styleUrls: ['./book-list.component.scss']
 })
 export class BookListComponent implements OnInit {
   books: Book[] = [];
@@ -26,7 +27,7 @@ export class BookListComponent implements OnInit {
   genres: string[] = [];
   authors: string[] = [];
 
-  constructor(private bookService: BookService) {}
+  constructor(private bookService: BookService, public roleService: RoleService) {}
 
   ngOnInit(): void {
     this.loadAllBooks();

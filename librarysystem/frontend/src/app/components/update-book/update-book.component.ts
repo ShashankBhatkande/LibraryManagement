@@ -9,7 +9,7 @@ import { CommonModule } from "@angular/common";
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule],
     templateUrl: './update-book.component.html',
-    styleUrls: ['./update-book.component.css']
+    styleUrls: ['./update-book.component.scss']
 })
 export class UpdateBookComponent{
     updateBookForm: FormGroup;

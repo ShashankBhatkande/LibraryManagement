@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -16,12 +17,23 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class JwtService {
     public static final String SECRET = "U2dWaFlwM3M2djl5L0I/RShIKE1iUWVUaFdtWnE0dDc=";
+    private final UserInfoService userInfoService;
+
     public String generateToken(String email) {
+        UserDetails userDetails = userInfoService.loadUserByUsername(email);
         Map<String, Object> claims = new HashMap<>();
+
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+
+        claims.put("roles", roles);
         return createToken(claims, email);
     }
 
@@ -30,7 +42,7 @@ public class JwtService {
             .setClaims(claims)
             .setSubject(email)
             .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 5))
+            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
             .signWith(getSignKey(), SignatureAlgorithm.HS256)
             .compact();
     }
@@ -64,7 +76,9 @@ public class JwtService {
 
     public Collection<? extends GrantedAuthority> getAuthorities(String token) {
         Claims claims = extractAllClaims(token);
-        String role = (String)claims.get("role");
-        return List.of((GrantedAuthority) () -> role);
+        List<String> roles = claims.get("roles", List.class);
+        return roles.stream()
+            .map(SimpleGrantedAuthority::new)
+            .toList();
     }
 }
