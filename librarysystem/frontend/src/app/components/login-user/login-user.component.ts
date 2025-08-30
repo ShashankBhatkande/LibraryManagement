@@ -25,7 +25,10 @@ export class LoginUserComponent {
                     this.router.navigate(['/books']);
                 }
             },
-            error: (err) => console.error('Error login: ', err)
+            error: (err) => {
+                console.error('Error login: ', err);
+                alert(err.error.error);
+            }
         });
     }
 }

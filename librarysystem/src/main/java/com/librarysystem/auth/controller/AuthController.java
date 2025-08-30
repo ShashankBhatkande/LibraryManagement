@@ -1,13 +1,14 @@
-package com.librarysystem.auth;
+package com.librarysystem.auth.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.librarysystem.user.dto.LoginRequest;
+import com.librarysystem.user.model.AccountStatus;
 import com.librarysystem.user.model.User;
 import com.librarysystem.user.service.JwtService;
 import com.librarysystem.user.service.UserService;
@@ -38,15 +40,22 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password()));
-
-        if(authentication.isAuthenticated()) {
-            String token = jwtService.generateToken(loginRequest.email());
-            Map<String, String> respone = new HashMap<>();
-            respone.put("token", token);
-            return ResponseEntity.ok(respone);
-        } else {
-            throw new UsernameNotFoundException("Invalid credentials");
-        }
+        Optional<User> optionalUser = userService.getUser(loginRequest.email());
+        if(optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            if(user.getStatus() != AccountStatus.APPROVED) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Account not approved."));
+            } else {
+                if(authentication.isAuthenticated()) {
+                    String token = jwtService.generateToken(loginRequest.email());
+                    Map<String, String> respone = new HashMap<>();
+                    respone.put("token", token);
+                    return ResponseEntity.ok(respone);
+                } 
+            }
+        } 
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid credentials"));
         
     } 
 

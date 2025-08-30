@@ -1,4 +1,4 @@
-package com.librarysystem.config;
+package com.librarysystem.auth.utils;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

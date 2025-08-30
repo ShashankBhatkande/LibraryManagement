@@ -1,7 +1,6 @@
 package com.librarysystem.book.controller;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.librarysystem.book.dto.BookUpdateRequest;
 import com.librarysystem.book.model.Books;
 import com.librarysystem.book.service.BookService;
 import lombok.RequiredArgsConstructor;
@@ -53,25 +54,21 @@ public class BookController {
     }
 
     @PatchMapping("/updateBook")
-    public ResponseEntity<String> updateBook(@RequestParam Long id, @RequestBody Map<String, Object> updates) {
+    public ResponseEntity<String> updateBook(@RequestParam Long id, @RequestBody BookUpdateRequest updates) {
         Optional<Books> optionalbook = bookService.findBookById(id);
         log.info("Update request for book with id: {}", id);
         if(optionalbook.isPresent()) {
             Books book = optionalbook.get();
-            if(updates.containsKey("author")) book.setAuthor((String)updates.get("author"));
-            if(updates.containsKey("genre")) book.setGenre((String)updates.get("genre"));
-            if(updates.containsKey("title")) book.setTitle((String)updates.get("title"));
-            if(updates.containsKey("quantity")) book.setQuantity((int)updates.get("quantity"));
-            if(updates.containsKey("imageUrl")) {
-                Object imageUrlObj = updates.get("imageUrl");
-                if(imageUrlObj instanceof String) {
-                    String imageUrl = ((String)imageUrlObj).trim();
-                    if(!imageUrl.isEmpty()) {
-                        book.setImageUrl(imageUrl);
-                    }
+            if(updates.author() != null) book.setAuthor(updates.author());
+            if(updates.genre() != null) book.setGenre(updates.genre());
+            if(updates.title() != null) book.setTitle(updates.title());
+            if(updates.imageUrl() != null) {
+                String trimmedImageUrl = updates.imageUrl().trim();
+                if(!trimmedImageUrl.isEmpty()) {
+                    book.setImageUrl(trimmedImageUrl);
                 }
-                 
             }
+            if(updates.quantity() != null) book.setQuantity(updates.quantity());
             bookService.saveBook(book);
             return ResponseEntity.status(HttpStatus.OK).body("Book updated successfully");
         } else {

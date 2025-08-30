@@ -30,9 +30,14 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/saveUser")
-    @PreAuthorize("hasRole('ADMIN')")
     public User saveUser(@RequestBody User user) {
         return userService.saveUser(user);
+    }
+
+    @GetMapping("/getUsers")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<User> getAllUsers() {
+        return userService.fetchAllUsers();
     }
 
     @GetMapping("/getBooks")
@@ -56,7 +61,7 @@ public class UserController {
     }
     
     @GetMapping("/search")
-    public List<Books> searchBooks(@RequestParam(required = false) Optional<?> title, @RequestParam(required = false) Optional<List<String>> genres, @RequestParam(required = false) Optional<List<String>> authors) {
+    public List<Books> searchBooks(@RequestParam(required = false) String title, @RequestParam(required = false) Optional<List<String>> genres, @RequestParam(required = false) Optional<List<String>> authors) {
         return userService.searchBooks(title, genres, authors);
     }
 

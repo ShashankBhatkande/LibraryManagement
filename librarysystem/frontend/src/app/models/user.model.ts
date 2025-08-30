@@ -6,4 +6,5 @@ export interface User {
     mobile: string;
     password: string;
     role: string;
+    status: string;
 }

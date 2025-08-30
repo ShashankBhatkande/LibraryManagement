@@ -32,7 +32,10 @@ export class AddUserComponent {
                     console.log("User saved successfully: ", data);
                     this.router.navigate(['/']);
                 },
-                error: (err) => console.error('Error saving user: ', err)
+                error: (err) => {
+                    console.error('Error saving user: ', err);
+                    alert(err.error);
+                }
             });
         }
     }

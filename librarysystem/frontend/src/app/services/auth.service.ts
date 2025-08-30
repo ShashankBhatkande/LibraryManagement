@@ -10,7 +10,7 @@ export class AuthService {
     constructor(private http: HttpClient) {}
     
     saveUser(user: User): Observable<User> {
-        return this.http.post<User>(`${this.baseUrl}/register`, user)
+        return this.http.post<User>(`${this.baseUrl}/register`, user);
     }
 
     login(email: String, password: String) {

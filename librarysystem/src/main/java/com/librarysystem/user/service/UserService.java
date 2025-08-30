@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
 import com.librarysystem.book.model.Books;
+import com.librarysystem.user.model.AccountStatus;
 import com.librarysystem.user.model.User;
 import com.librarysystem.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +32,25 @@ public class UserService {
     private final PasswordEncoder encoder;
 
     public User saveUser(User user) {
+        if(userRepository.existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Email Already Exists");
+        }
+
+        if(user.getRole().equals("USER")) {
+            user.setStatus(AccountStatus.APPROVED);
+        } else {
+            user.setStatus(AccountStatus.PENDING);
+        }
         user.setPassword(encoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
+    public List<User> fetchAllUsers() {
+        return userRepository.findAll();
+    }
 
+    public Optional<User> getUser(String email) {
+        return userRepository.findByEmail(email);
+    }
     public List<Books> fetchBooksForUser() {
         String url = "http://localhost:8080/books/getBooks";
         ResponseEntity<Books[]> response =  restTemplate.getForEntity(url, Books[].class);
@@ -55,10 +72,10 @@ public class UserService {
         restTemplate.postForObject(url, book, Books.class);
     }
 
-    public List<Books> searchBooks(Optional<?> title, Optional<List<String>> genre, Optional<List<String>> author) {
+    public List<Books> searchBooks(String title, Optional<List<String>> genre, Optional<List<String>> author) {
         String url = "http://localhost:8080/books/searchBooks";
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
-        title.ifPresent(t -> builder.queryParam("title", t));
+        builder.queryParam("title", title);
         genre.ifPresent(gList -> gList.forEach(g -> builder.queryParam("genres", g)));
         author.ifPresent(aList -> aList.forEach(a -> builder.queryParam("authors", a)));
 
@@ -103,5 +120,25 @@ public class UserService {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error" + e.getMessage());
         }
+    }
+
+    public ResponseEntity<String> rejectUser(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        if(user.isPresent()) {
+            userRepository.deleteById(id);
+            return ResponseEntity.status(HttpStatus.OK).body("User has been rejected");
+        } 
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+    }
+
+    public ResponseEntity<String> approveUser(Long id) {
+        Optional<User> optUser = userRepository.findById(id);
+        if(optUser.isPresent()) {
+            User user = optUser.get();
+            user.setStatus(AccountStatus.APPROVED);
+            userRepository.save(user);
+            return ResponseEntity.status(HttpStatus.OK).body("User has been accepted");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
     }
 }

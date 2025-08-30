@@ -6,6 +6,11 @@
     Add Book
   </button>
 </div>
+<div class="showUser">
+  <button *ngIf="roleService.hasAtLeast('ROLE_ADMIN')" mat-raised-button color="primary" [routerLink]="['/show-user']">
+    Show Users
+  </button>
+</div>
 <div>
   <button (click)="setViewMode('grid')">Grid</button>
   <button (click)="setViewMode('list')">List</button>
