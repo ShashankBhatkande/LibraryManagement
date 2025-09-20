@@ -11,6 +11,9 @@
     Show Users
   </button>
 </div>
+<button mat-raised-button color="warn" mat-raised-button color="primary" [routerLink]="['/view-profile']">
+  Profile
+</button>
 <div>
   <button (click)="setViewMode('grid')">Grid</button>
   <button (click)="setViewMode('list')">List</button>
@@ -44,6 +47,9 @@
       <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-raised-button color="warn" (click)="onDelete(book)">
         Delete Book
       </button>
+      <button mat-raised-button color="warn" (click)="onBorrow(book)">
+        Borrow Book
+      </button>
     </div>
   </div>
 </div>
@@ -59,6 +65,9 @@
       </button>
       <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-raised-button color="warn" (click)="onDelete(book)">
         Delete Book
+      </button>
+      <button mat-raised-button color="warn" (click)="onBorrow(book)">
+        Borrow Book
       </button>
     </div>
   </div>

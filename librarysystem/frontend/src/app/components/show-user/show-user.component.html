@@ -5,7 +5,7 @@
     <p><strong>Role:</strong> {{ user.role }}</p>
     <p><strong>Status:</strong> {{ user.status }}</p>
     <div class="approveStatus">
-        <button *ngIf="roleService.hasAtLeast('ROLE_ADMIN') && user.role != 'USER' && user.status != 'APPROVED'" mat-raised-button color="warn"
+        <button *ngIf="roleService.hasAtLeast('ROLE_ADMIN') && user.status != 'APPROVED'" mat-raised-button color="warn"
             (click)="onApprove(user)">
             Approve user
         </button>

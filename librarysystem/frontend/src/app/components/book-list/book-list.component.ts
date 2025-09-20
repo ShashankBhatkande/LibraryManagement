@@ -9,6 +9,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { RouterLink } from '@angular/router';
 import { RoleService } from '../../services/role.service';
+import { User } from '../../models/user.model';
+import { BorrowBookService } from '../../services/borrow.service';
 
 @Component({
   standalone: true,
@@ -27,7 +29,7 @@ export class BookListComponent implements OnInit {
   genres: string[] = [];
   authors: string[] = [];
 
-  constructor(private bookService: BookService, public roleService: RoleService) {}
+  constructor(private bookService: BookService, public roleService: RoleService, public borrowBookService: BorrowBookService) {}
 
   ngOnInit(): void {
     this.loadAllBooks();
@@ -82,5 +84,17 @@ export class BookListComponent implements OnInit {
         }
       });
     }
+  }
+
+  onBorrow(book: Book) {
+    console.log("Borrowing book ", book);
+    this.borrowBookService.borrowBook(book.id).subscribe({
+      next: () => {
+        this.loadAllBooks();
+      },
+      error: (err: any) => {
+        console.error("Borrow failed", err.error)
+      }
+    })
   }
 }

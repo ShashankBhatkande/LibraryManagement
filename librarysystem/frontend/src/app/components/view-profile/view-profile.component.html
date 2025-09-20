@@ -1,0 +1,11 @@
+<div class="viewBorrowRecord">
+    <div *ngFor="let br of borrowRecords" class="record-card">
+        <p><strong>Title:</strong> {{ br.title }}</p>
+        <p><strong>Borrow Status:</strong> {{ br.borrowStatus }}</p>
+        <p><strong>Fine:</strong> {{ br.fine }}</p>
+        <p><strong>FinePaid:</strong> {{ br.finePaid }}</p>
+        <p><strong>Borrow Date:</strong> {{ br.borrowDate }}</p>
+        <p><strong>Due Date:</strong> {{ br.dueDate }}</p>
+        <p><strong>Returned Date:</strong> {{ br.returnDate }}</p>
+    </div>
+</div>

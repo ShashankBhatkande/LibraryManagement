@@ -5,6 +5,7 @@ import { UpdateBookComponent } from './components/update-book/update-book.compon
 import { AddUserComponent } from './components/add-user/add-user.component';
 import { LoginUserComponent } from './components/login-user/login-user.component';
 import { ShowUserComponent } from './components/show-user/show-user.component';
+import { ViewProfileComponent } from './components/view-profile/view-profile.component';
 
 export const routes: Routes = [
     { path: '', component: LoginUserComponent},
@@ -12,5 +13,6 @@ export const routes: Routes = [
     { path: 'add-book', component: AddBookComponent},
     { path: 'update-book/:id', component: UpdateBookComponent},
     { path: 'register', component: AddUserComponent},
-    { path: 'show-user', component: ShowUserComponent}
+    { path: 'show-user', component: ShowUserComponent},
+    { path: 'view-profile', component: ViewProfileComponent}
 ];
