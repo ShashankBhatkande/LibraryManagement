@@ -10,14 +10,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.librarysystem.borrow.dto.BorrowRequest;
 import com.librarysystem.borrow.dto.ResponseRecord;
-import com.librarysystem.borrow.dto.ReturnRequest;
+import com.librarysystem.borrow.dto.ReturnBookRequest;
+import com.librarysystem.borrow.model.BorrowRecord;
 import com.librarysystem.borrow.service.BorrowRecordService;
 import com.librarysystem.user.model.User;
 
@@ -31,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class BorrowRecordController {
     private final BorrowRecordService service;
 
-    @PostMapping("/borrow")
+    @PatchMapping("/borrow")
     public ResponseEntity<Map<String, String>> borrowBook(@RequestBody BorrowRequest borrowRequest) {
         String email = borrowRequest.username();
         Long bookId = borrowRequest.bookId();
@@ -59,20 +60,36 @@ public class BorrowRecordController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message","Borrow request failed."));
     }
 
-    @PostMapping("/returnBook")
-    public ResponseEntity<Map<String, String>> returnBook(@RequestBody ReturnRequest returnRequest) {
-        Long bookId = returnRequest.bookId();
-        String username = returnRequest.username();
+    @PatchMapping("/returnBook")
+    public ResponseEntity<Map<String, String>> returnBook(@RequestBody ReturnBookRequest returnBookRequest) {
+        log.info("Borrow Record id is: " + returnBookRequest.id());
+        BorrowRecord borrowRecord = service.getBorrowRecord(returnBookRequest.id());
+        Long bookId = borrowRecord.getBook().getId();
+        String username = borrowRecord.getUser().getEmail();
         User user = service.findByEmail(username).get();
 
         service.returnBook(user.getId(), bookId);
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Book returned successfully."));
     }
 
-    @GetMapping("/getRecords")
+    @GetMapping("/getUserRecords")
     public List<ResponseRecord> getUserRecords(@AuthenticationPrincipal UserDetails userDetails) {
         String email = userDetails.getUsername();
         Long id = service.findByEmail(email).get().getId();
         return service.getUserRecords(id);
     } 
+    @GetMapping("/getRecords")
+    public List<ResponseRecord> getRecords() {
+        return service.getReturnedBookUserRecords();
+    } 
+    @PatchMapping("/confirmReturn")
+    public ResponseEntity<Map<String, String>> confirmReturn(@RequestBody ReturnBookRequest request) {
+        BorrowRecord record = service.getBorrowRecord(request.id());
+        Long bookId = record.getBook().getId();
+        String username = record.getUser().getEmail();
+        User user = service.findByEmail(username).get();
+
+        service.confirmReturn(user.getId(), bookId);
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Book returned confirmed."));
+    }
 }

@@ -26,6 +26,10 @@ public class BorrowRecordService {
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
 
+    public BorrowRecord getBorrowRecord(Long id) {
+        return borrowRecordRepository.findById(id).get();
+    }
+
     public boolean checkAvailability(Long bookId) {
         Optional<Books> book = bookRepository.findById(bookId);
         return book.get().getQuantity() > 0;
@@ -89,16 +93,14 @@ public class BorrowRecordService {
     public void returnBook(Long userId, Long bookId) {
         BorrowRecord record = borrowRecordRepository.findByUserIdAndBookIdAndReturnDateIsNull(userId, bookId);
 
-        record.setFine(calculateFine(record));
         record.setBorrowStatus(BorrowStatus.RETURNED);
-        record.setReturnDate(LocalDate.now());
-
         borrowRecordRepository.save(record);
     }
 
-    public List<ResponseRecord> getUserRecords(Long id) {
-        return borrowRecordRepository.findByUserId(id).stream()
+    public List<ResponseRecord> getUserRecords(Long userId) {
+        return borrowRecordRepository.findByUserId(userId).stream()
         .map(record -> ResponseRecord.builder()
+            .id(record.getId())
             .title(record.getBook().getTitle())
             .borrowStatus(record.getBorrowStatus().name())
             .borrowDate(record.getBorrowDate())
@@ -109,5 +111,32 @@ public class BorrowRecordService {
             .build()
         ).toList();
             
+    }
+
+    public void confirmReturn(Long userId, Long bookId) {
+        Books book = bookRepository.findById(bookId).get();
+        book.setQuantity(book.getQuantity() + 1);
+        bookRepository.save(book);
+        
+        BorrowRecord record = borrowRecordRepository.findByUserIdAndBookIdAndReturnDateIsNull(userId, bookId);
+        record.setReturnDate(LocalDate.now());
+        record.setBorrowStatus(BorrowStatus.RETURNCONFIRMED);
+        record.setFine(calculateFine(record));
+        borrowRecordRepository.save(record);
+    }
+
+    public List<ResponseRecord> getReturnedBookUserRecords() {
+        return borrowRecordRepository.findAll().stream()
+        .map(record -> ResponseRecord.builder()
+            .id(record.getId())
+            .title(record.getBook().getTitle())
+            .borrowStatus(record.getBorrowStatus().name())
+            .borrowDate(record.getBorrowDate())
+            .returnDate(record.getReturnDate())
+            .dueDate(record.getDueDate())
+            .fine(record.getFine())
+            .paidFine(record.isFinePaid())
+            .build()
+        ).toList();
     }
 }

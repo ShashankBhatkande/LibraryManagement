@@ -1,7 +1,9 @@
-import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { jwtDecode } from "jwt-decode";
-import { EMPTY } from "rxjs";
+import { EMPTY, Observable } from "rxjs";
+import { BorrowRecord } from "../models/borrowrecord.model";
+
 @Injectable({ providedIn: 'root' })
 export class BorrowBookService {
     constructor(private http: HttpClient){}
@@ -21,10 +23,68 @@ export class BorrowBookService {
                 bookId: bookId
             };
             
-            return this.http.post(`http://localhost:8080/transactions/borrow`, body, { headers });
+            return this.http.patch(`http://localhost:8080/transactions/borrow`, body, { headers });
         } catch(error) {
             console.error("Invalid token ", error);
-            return EMPTY    ;
+            return EMPTY;
+        }
+    }
+
+    loadUserBorrowRecords(): Observable<BorrowRecord[]> {
+        const token = localStorage.getItem('jwtToken');
+        if(!token) {
+            console.error("No token found");
+            return EMPTY
+        }
+        const headers = new HttpHeaders().set("Authorization", `Bearer ${token}`);
+        return this.http.get<BorrowRecord[]>(`http://localhost:8080/transactions/getUserRecords`, { headers });
+    }
+
+    loadBorrowRecords(): Observable<BorrowRecord[]> {
+        const token = localStorage.getItem('jwtToken');
+        if(!token) {
+            console.error("No token found");
+            return EMPTY;
+        }
+        const headers = new HttpHeaders().set("Authorization", `Bearer ${token}`);
+        return this.http.get<BorrowRecord[]>(`http://localhost:8080/transactions/getRecords`, { headers });
+    }
+    returnBook(id: number): any {
+        const token = localStorage.getItem('jwtToken');
+        if(!token) {
+            console.error("No token found");
+            return EMPTY;
+        }
+        try {
+            const headers = new HttpHeaders().set("Authorization", `Bearer ${token}`);
+            const body = {
+                id: id
+            };
+
+            return this.http.patch('http://localhost:8080/transactions/returnBook', body, { headers });
+        } catch(error) {
+            console.error("Invalid token: ",  error);
+            return EMPTY;
+        }
+    }
+
+    confirmReturn(id: number): any {
+        const token = localStorage.getItem('jwtToken');
+        if(!token) {
+            console.error("No Token found");
+            return EMPTY;
+        }
+        try {
+            const decoded = jwtDecode(token);
+            const headers = new HttpHeaders().set("Authorization", `Bearer ${token}`);
+            const body = {
+                id: id
+            };
+
+            return this.http.patch('http://localhost:8080/transactions/confirmReturn', body, { headers });
+        } catch(error) {
+            console.error("Invalid token: ", error);
+            return EMPTY;
         }
     }
 }

@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import lombok.Builder;
 
 @Builder
-public record ResponseRecord(String title, BigDecimal fine, boolean paidFine, String borrowStatus, LocalDate borrowDate, LocalDate dueDate,
+public record ResponseRecord(Long id, String title, BigDecimal fine, boolean paidFine, String borrowStatus, LocalDate borrowDate, LocalDate dueDate,
                                 LocalDate returnDate) {
 
 }

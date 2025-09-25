@@ -2,7 +2,6 @@ import { Component } from "@angular/core";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { BookService } from "../../services/book.service";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Book } from "../../models/book.model";
 import { CommonModule } from "@angular/common";
 
 @Component({

@@ -1,9 +1,9 @@
 import { Component, OnInit } from "@angular/core";
 import { BorrowRecord } from "../../models/borrowrecord.model";
-import { BorrowRecordService } from "../../services/borrowrecord.service";
 import { CommonModule } from "@angular/common";
 import { ReactiveFormsModule } from "@angular/forms";
-import { RouterLink } from "@angular/router";
+import { BorrowBookService } from "../../services/borrow.service";
+import { RoleService } from "../../services/role.service";
 
 @Component({
     standalone: true,
@@ -13,13 +13,21 @@ import { RouterLink } from "@angular/router";
 })
 export class ViewProfileComponent implements OnInit{
     borrowRecords: BorrowRecord[] = [];
-    constructor(private borrowRecordService: BorrowRecordService){};
+    constructor(private borrowBookService: BorrowBookService, public roleService: RoleService){};
 
     ngOnInit(): void {
-        this.loadUserBorrowRecords();
+        this.loadBorrowRecords();
     }
 
-    loadUserBorrowRecords(): any {
-        this.borrowRecordService.loadUserBorrowRecords().subscribe(data => this.borrowRecords = data);
+    loadBorrowRecords(): any {
+        this.borrowBookService.loadBorrowRecords().subscribe(data => this.borrowRecords = data);
     }
+
+   onConfirm(borrwoRecord: BorrowRecord): any {
+        console.log(borrwoRecord.id);
+        this.borrowBookService.confirmReturn(borrwoRecord.id) 
+        .subscribe(() => {
+            this.loadBorrowRecords();
+        });
+   }
 }

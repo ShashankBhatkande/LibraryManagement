@@ -1,4 +1,5 @@
 export interface BorrowRecord {
+    id: number;
     title: string;
     borrowStatus: string;
     fine: number;

@@ -7,6 +7,6 @@
         <p><strong>Borrow Date:</strong> {{ br.borrowDate }}</p>
         <p><strong>Due Date:</strong> {{ br.dueDate }}</p>
         <p><strong>Returned Date:</strong> {{ br.returnDate }}</p>
-        <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN') && br.borrowStatus === 'RETURNED'" (click)="onConfirm(br)">Confirm</button>
+        <button *ngIf="br.borrowStatus === 'BORROWED'" (click)="onReturn(br)">Return</button>
     </div>
 </div>
