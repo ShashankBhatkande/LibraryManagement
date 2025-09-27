@@ -21,7 +21,15 @@ export class LoginUserComponent {
         this.authService.login(this.email, this.password).subscribe ({
             next: (res) => {
                 if(res && res.token) {
+                    // Clear previous login data
+                    localStorage.removeItem("jwtToken");
+                    localStorage.removeItem("userEmail");
+                    localStorage.removeItem("name");
+
+                    // Store new login data
                     localStorage.setItem("jwtToken", res.token);
+                    localStorage.setItem("userEmail", this.email);  // save current email
+                    localStorage.setItem("name", res.username);
                     this.router.navigate(['/books']);
                 }
             },

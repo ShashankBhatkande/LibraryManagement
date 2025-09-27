@@ -1,0 +1,70 @@
+.showUsersContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+  background: #f5f7fa;
+}
+
+.user-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  }
+
+  p {
+    margin: 0.3rem 0;
+    font-size: 14px;
+    color: #444;
+
+    strong {
+      color: #2c3e50;
+    }
+  }
+
+  // Status color highlights
+  &.approved {
+    border-left: 5px solid #27ae60; // green
+  }
+
+  &.pending {
+    border-left: 5px solid #f39c12; // orange
+  }
+
+  &.rejected {
+    border-left: 5px solid #e74c3c; // red
+  }
+
+  .approveStatus {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+
+    button {
+      border-radius: 6px;
+      font-weight: 500;
+      text-transform: capitalize;
+      padding: 0.5rem 1rem;
+      min-width: 120px;
+
+      &.mat-warn {
+        background: #e74c3c !important;
+        color: #fff;
+      }
+
+      &:hover {
+        filter: brightness(0.9);
+      }
+    }
+  }
+}

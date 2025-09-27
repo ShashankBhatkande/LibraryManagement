@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +23,8 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class JwtService {
-    public static final String SECRET = "U2dWaFlwM3M2djl5L0I/RShIKE1iUWVUaFdtWnE0dDc=";
+    @Value("${jwt.secret}")
+    private String SECRET;
     private final UserInfoService userInfoService;
 
     public String generateToken(String email) {

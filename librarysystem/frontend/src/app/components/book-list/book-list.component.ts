@@ -3,25 +3,34 @@ import { CommonModule } from '@angular/common';
 import { BookService } from '../../services/book.service';
 import { Book } from '../../models/book.model';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, subscribeOn } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { merge } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
 import { RoleService } from '../../services/role.service';
-import { User } from '../../models/user.model';
 import { BorrowBookService } from '../../services/borrow.service';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatSelectModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, MatSidenavModule,
+    MatDividerModule,
+    MatCardModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule, MatSelectModule, RouterLink],
   templateUrl: './book-list.component.html',
   styleUrls: ['./book-list.component.scss']
 })
 export class BookListComponent implements OnInit {
   books: Book[] = [];
   viewMode: 'grid' | 'list' = 'grid';
-
+  username: string = '';
   searchControl = new FormControl('');
   genreControl = new FormControl<string[]>([]);
   authorControl = new FormControl<string[]>([]);
@@ -32,6 +41,9 @@ export class BookListComponent implements OnInit {
   constructor(private bookService: BookService, public roleService: RoleService, public borrowBookService: BorrowBookService) {}
 
   ngOnInit(): void {
+    const email = localStorage.getItem('userEmail');
+    const username = localStorage.getItem('name') ?? 'Guest';
+    this.username = username;
     this.loadAllBooks();
     this.loadAllAuthors();
     this.loadAllGenres();

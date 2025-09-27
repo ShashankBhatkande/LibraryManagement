@@ -1,21 +1,33 @@
-<div *ngFor="let user of users" class="user-card">
+<div class="showUsersContainer">
+  <div *ngFor="let user of users" 
+       class="user-card"
+       [ngClass]="{
+          'approved': user.status === 'APPROVED',
+          'pending': user.status === 'PENDING',
+          'rejected': user.status === 'REJECTED'
+       }">
+       
     <p><strong>Name:</strong> {{ user.firstname }} {{ user.lastname }}</p>
     <p><strong>Email:</strong> {{ user.email }}</p>
     <p><strong>Mobile:</strong> {{ user.mobile }}</p>
     <p><strong>Role:</strong> {{ user.role }}</p>
     <p><strong>Status:</strong> {{ user.status }}</p>
+
     <div class="approveStatus">
-        <button *ngIf="roleService.hasAtLeast('ROLE_ADMIN') && user.status != 'APPROVED'" mat-raised-button color="warn"
-            (click)="onApprove(user)">
-            Approve user
-        </button>
-        <button *ngIf="roleService.hasAtLeast('ROLE_ADMIN') && user.status == 'PENDING'" mat-raised-button color="warn"
-            (click)="onDelete(user)">
-            Reject user
-        </button>
-        <button *ngIf="roleService.hasAtLeast('ROLE_ADMIN') && user.status == 'APPROVED'" mat-raised-button color="warn"
-            (click)="onDelete(user)"> 
-            Delete user
-        </button>
+      <button *ngIf="roleService.hasAtLeast('ROLE_ADMIN') && user.status != 'APPROVED'"
+              mat-raised-button color="warn" (click)="onApprove(user)">
+        Approve user
+      </button>
+
+      <button *ngIf="roleService.hasAtLeast('ROLE_ADMIN') && user.status == 'PENDING'"
+              mat-raised-button color="warn" (click)="onDelete(user)">
+        Reject user
+      </button>
+
+      <button *ngIf="roleService.hasAtLeast('ROLE_ADMIN') && user.status == 'APPROVED'"
+              mat-raised-button color="warn" (click)="onDelete(user)">
+        Delete user
+      </button>
     </div>
+  </div>
 </div>

@@ -48,9 +48,10 @@ public class AuthController {
             } else {
                 if(authentication.isAuthenticated()) {
                     String token = jwtService.generateToken(loginRequest.email());
-                    Map<String, String> respone = new HashMap<>();
-                    respone.put("token", token);
-                    return ResponseEntity.ok(respone);
+                    Map<String, String> response = new HashMap<>();
+                    response.put("token", token);
+                    response.put("username", user.getFirstname() + " " + user.getLastname());
+                    return ResponseEntity.ok(response);
                 } 
             }
         } 

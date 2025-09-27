@@ -1,79 +1,107 @@
-<div class="filters">
-  <input type="text" [formControl]="searchControl" placeholder="Search by title" />
-</div>
-<div class="addBook">
-  <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-raised-button color="primary" [routerLink]="['/add-book']">
-    Add Book
-  </button>
-</div>
-<div class="showUser">
-  <button *ngIf="roleService.hasAtLeast('ROLE_ADMIN')" mat-raised-button color="primary" [routerLink]="['/show-user']">
-    Show Users
-  </button>
-</div>
-<button mat-raised-button color="warn" mat-raised-button color="primary" [routerLink]="['/view-myprofile']">
-  My Profile
-</button>
+<mat-sidenav-container class="sidenav-container">
+  <!-- Sidebar -->
+  <mat-sidenav mode="side" opened class="sidenav">
+    <h2 class="logo">
+      <span class="welcome-text">Welcome,</span><br>
+      <span class="username">{{ username }}</span>
+    </h2>
 
-<button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-raised-button color="warn" mat-raised-button color="primary" [routerLink]="['/view-profile']">
-  Profiles
-</button>
+    <mat-divider></mat-divider>
 
-<div>
-  <button (click)="setViewMode('grid')">Grid</button>
-  <button (click)="setViewMode('list')">List</button>
-</div>
+    <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-button [routerLink]="['/add-book']">
+      ➕ Add Book
+    </button>
 
-<mat-form-field>
-  <mat-label>Genres</mat-label>
-  <mat-select [formControl]="genreControl" multiple>
-    <mat-option *ngFor="let g of genres" [value]="g">{{ g }}</mat-option>
-  </mat-select>
-</mat-form-field>
+    <button *ngIf="roleService.hasAtLeast('ROLE_ADMIN')" mat-button [routerLink]="['/show-user']">
+      👥 Show Users
+    </button>
 
-<mat-form-field>
-  <mat-label>Authors</mat-label>
-  <mat-select [formControl]="authorControl" multiple>
-    <mat-option *ngFor="let a of authors" [value]="a">{{ a }}</mat-option>
-  </mat-select>
-</mat-form-field>
+    <button mat-button [routerLink]="['/view-myprofile']">
+      👤 My Profile
+    </button>
 
-<div *ngIf="viewMode === 'grid'" class="grid-view">
-  <div *ngFor="let book of books" class="book-card">
-    <img *ngIf="book.imageUrl" [src]="book.imageUrl" alt="{{ book.title }}" class="book-image" />
-    <h3>{{ book.title }}</h3>
-    <p><strong>Genre:</strong> {{ book.genre }}</p>
-    <p><strong>Author:</strong> {{ book.author }}</p>
-    <p><strong>Quantity:</strong> {{ book.quantity }}</p>
-    <div class="updateBook">
-      <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-raised-button color="primary" [routerLink]="['/update-book', book.id]">
-        Update Book
-      </button>
-      <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-raised-button color="warn" (click)="onDelete(book)">
-        Delete Book
-      </button>
-      <button mat-raised-button color="warn" (click)="onBorrow(book)">
-        Borrow Book
-      </button>
+    <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-button [routerLink]="['/view-profile']">
+      📑 Profiles
+    </button>
+  </mat-sidenav>
+
+  <!-- Main Content -->
+  <mat-sidenav-content class="main-content">
+    <div class="topbar">
+      <div class="filters">
+        <mat-form-field appearance="outline">
+          <mat-label>Search by title</mat-label>
+          <input matInput [formControl]="searchControl" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Genres</mat-label>
+          <mat-select [formControl]="genreControl" multiple>
+            <mat-option *ngFor="let g of genres" [value]="g">{{ g }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Authors</mat-label>
+          <mat-select [formControl]="authorControl" multiple>
+            <mat-option *ngFor="let a of authors" [value]="a">{{ a }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="view-toggle">
+          <button mat-stroked-button (click)="setViewMode('grid')">Grid</button>
+          <button mat-stroked-button (click)="setViewMode('list')">List</button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<div *ngIf="viewMode === 'list'" class="list-view">
-  <div *ngFor="let book of books" class="book-row">
-    <img *ngIf="book.imageUrl" [src]="book.imageUrl" alt="{{ book.title }}" class="book-thumb" />
-    <strong>{{ book.title }}</strong> - {{ book.genre }} - {{ book.author }} ({{ book.quantity }} available)
-
-    <div class="updateBook">
-      <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-raised-button color="primary" [routerLink]="['/update-book', book.id]">
-        Update Book
-      </button>
-      <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-raised-button color="warn" (click)="onDelete(book)">
-        Delete Book
-      </button>
-      <button mat-raised-button color="warn" (click)="onBorrow(book)">
-        Borrow Book
-      </button>
+    <!-- Grid View -->
+    <div *ngIf="viewMode === 'grid'" class="grid-view">
+      <mat-card *ngFor="let book of books" class="book-card">
+        <img *ngIf="book.imageUrl" [src]="book.imageUrl" alt="{{ book.title }}" class="book-image" />
+        <mat-card-content>
+          <h3>{{ book.title }}</h3>
+          <p><strong>Genre:</strong> {{ book.genre }}</p>
+          <p><strong>Author:</strong> {{ book.author }}</p>
+          <p><strong>Quantity:</strong> {{ book.quantity }}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-raised-button color="primary"
+            [routerLink]="['/update-book', book.id]">
+            Update
+          </button>
+          <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-raised-button color="warn"
+            (click)="onDelete(book)">
+            Delete
+          </button>
+          <button mat-raised-button color="accent" (click)="onBorrow(book)">
+            Borrow
+          </button>
+        </mat-card-actions>
+      </mat-card>
     </div>
-  </div>
-</div>
+
+    <!-- List View -->
+    <div *ngIf="viewMode === 'list'" class="list-view">
+      <div *ngFor="let book of books" class="book-row">
+        <img *ngIf="book.imageUrl" [src]="book.imageUrl" alt="{{ book.title }}" class="book-thumb" />
+        <div class="book-info">
+          <strong>{{ book.title }}</strong> - {{ book.genre }} - {{ book.author }}
+          ({{ book.quantity }} available)
+        </div>
+        <div class="actions">
+          <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-button color="primary"
+            [routerLink]="['/update-book', book.id]">
+            Update
+          </button>
+          <button *ngIf="roleService.hasAtLeast('ROLE_LIBRARIAN')" mat-button color="warn" (click)="onDelete(book)">
+            Delete
+          </button>
+          <button mat-button color="accent" (click)="onBorrow(book)">
+            Borrow
+          </button>
+        </div>
+      </div>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

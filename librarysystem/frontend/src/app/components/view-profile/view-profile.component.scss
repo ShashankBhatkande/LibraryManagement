@@ -1,0 +1,61 @@
+.viewBorrowRecord {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 2fr));
+  gap: 1.5rem;
+  padding: 2rem;
+  background: #f5f7fa;
+
+  .record-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    p {
+      margin: 0.5rem 0;
+      font-size: 14px;
+      color: #444;
+
+      strong {
+        color: #2c3e50;
+      }
+    }
+
+    button {
+      margin-top: 1rem;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #1976d2;
+      color: #fff;
+      font-weight: 500;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: #125ea7;
+      }
+
+      &:active {
+        background: #0d437a;
+      }
+    }
+
+    // Different borrow status highlight
+    &.borrowed {
+      border-left: 5px solid #f39c12; // Orange
+    }
+    &.returned {
+      border-left: 5px solid #27ae60; // Green
+    }
+    &.overdue {
+      border-left: 5px solid #e74c3c; // Red
+    }
+  }
+}

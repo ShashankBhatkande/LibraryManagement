@@ -39,7 +39,6 @@ public class BookService {
     }
 
     public Optional<Books> findBookById(Long id) {
-        log.info("Looking for book id: {}", id);
         return bookRepository.findById(id);
     }
 }
