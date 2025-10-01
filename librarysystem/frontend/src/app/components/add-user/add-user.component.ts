@@ -12,31 +12,43 @@ import { AuthService } from "../../services/auth.service";
     styleUrls: ['./add-user.component.scss']
 })
 export class AddUserComponent {
+    successMessage: string | null = null;
+    errorMessage: string | null = null;
+
     addUserForm: FormGroup;
     constructor(private authService: AuthService, private fb: FormBuilder, private router: Router) {
         this.addUserForm = this.fb.group({
             firstname: ['', Validators.required],
             lastname: ['', Validators.required],
-            email:['', [Validators.required, Validators.email]],
-            mobile:['', Validators.required],
-            password:['', Validators.required],
-            role:['', Validators.required]
+            email: ['', [Validators.required, Validators.email]],
+            mobile: ['', Validators.required],
+            password: ['', Validators.required],
+            role: ['', Validators.required]
         })
     }
 
     onSubmit() {
-        if(this.addUserForm.valid) {
+        if (this.addUserForm.valid) {
             const newUser: User = this.addUserForm.value;
             this.authService.saveUser(newUser).subscribe({
                 next: (data) => {
-                    console.log("User saved successfully: ", data);
-                    this.router.navigate(['/']);
+                    this.successMessage = "User saved successfully!";
+                    this.errorMessage = null;
                 },
                 error: (err) => {
-                    console.error('Error saving user: ', err);
-                    alert(err.error);
+                    this.errorMessage = err.error.error || "Error saving user.";
+                    this.successMessage = null;
                 }
             });
         }
+    }
+
+    onSuccessOk() {
+        this.successMessage = null;
+        this.router.navigate(['/']);
+    }
+
+    onErrorClose() {
+        this.errorMessage = null;
     }
 }

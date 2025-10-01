@@ -7,11 +7,11 @@ export interface JwtPayload {
     sub?: string;
     roles?: string[];
 }
-@Injectable({ providedIn: 'root' }) 
+@Injectable({ providedIn: 'root' })
 export class RoleService {
     getRoles(): string[] {
         const token = localStorage.getItem("jwtToken");
-        if(!token) return[];
+        if (!token) return [];
         try {
             const decoded = jwtDecode<JwtPayload>(token);
             return decoded.roles || [];
@@ -27,7 +27,7 @@ export class RoleService {
         let maxUserLevel = -1;
         userRoles.forEach(r => {
             const idx = hierarchy.indexOf(r);
-            if(idx > maxUserLevel) maxUserLevel = idx;
+            if (idx > maxUserLevel) maxUserLevel = idx;
         });
 
         const requiredLevel = hierarchy.indexOf(role);

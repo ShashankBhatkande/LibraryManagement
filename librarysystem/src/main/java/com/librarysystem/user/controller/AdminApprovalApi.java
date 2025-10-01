@@ -1,5 +1,9 @@
 package com.librarysystem.user.controller;
 
+import java.util.Map;
+import java.util.NoSuchElementException;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,15 +22,45 @@ import lombok.RequiredArgsConstructor;
 public class AdminApprovalApi {
     private final UserService service;
 
-    @PatchMapping("/approve") 
+    @PatchMapping("/approve")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> approveUser(@RequestParam Long id) {
-        return service.approveUser(id);
+    public ResponseEntity<Map<String, String>> approveUser(@RequestParam Long id) {
+        try {
+            service.approveUser(id);
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User approved."));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "User not found."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Something went wrong."));
+        }
     }
 
-    @DeleteMapping("/reject") 
+    @PatchMapping("/delete")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> rejectUser(@RequestParam Long id) {
-        return service.rejectUser(id);
+    public ResponseEntity<Map<String, String>> deleteUser(@RequestParam Long id) {
+        try {
+            service.deleteUser(id);
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User approved."));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "User not found."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Something went wrong."));
+        }
+    }
+
+    @DeleteMapping("/reject")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, String>> rejectUser(@RequestParam Long id) {
+        try {
+            service.rejectUser(id);
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User approved."));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "User not found."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Something went wrong."));
+        }
     }
 }

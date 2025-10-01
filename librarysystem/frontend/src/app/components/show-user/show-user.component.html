@@ -1,12 +1,10 @@
 <div class="showUsersContainer">
-  <div *ngFor="let user of users" 
-       class="user-card"
-       [ngClass]="{
+  <div *ngFor="let user of users" class="user-card" [ngClass]="{
           'approved': user.status === 'APPROVED',
           'pending': user.status === 'PENDING',
           'rejected': user.status === 'REJECTED'
        }">
-       
+
     <p><strong>Name:</strong> {{ user.firstname }} {{ user.lastname }}</p>
     <p><strong>Email:</strong> {{ user.email }}</p>
     <p><strong>Mobile:</strong> {{ user.mobile }}</p>
@@ -14,20 +12,34 @@
     <p><strong>Status:</strong> {{ user.status }}</p>
 
     <div class="approveStatus">
-      <button *ngIf="roleService.hasAtLeast('ROLE_ADMIN') && user.status != 'APPROVED'"
-              mat-raised-button color="warn" (click)="onApprove(user)">
+      <button *ngIf="roleService.hasAtLeast('ROLE_ADMIN') && user.status != 'APPROVED'" mat-raised-button color="warn"
+        (click)="onApprove(user)">
         Approve user
       </button>
 
-      <button *ngIf="roleService.hasAtLeast('ROLE_ADMIN') && user.status == 'PENDING'"
-              mat-raised-button color="warn" (click)="onDelete(user)">
+      <button *ngIf="roleService.hasAtLeast('ROLE_ADMIN') && user.status == 'PENDING'" mat-raised-button color="warn"
+        (click)="onReject(user)">
         Reject user
       </button>
 
-      <button *ngIf="roleService.hasAtLeast('ROLE_ADMIN') && user.status == 'APPROVED'"
-              mat-raised-button color="warn" (click)="onDelete(user)">
+      <button *ngIf="roleService.hasAtLeast('ROLE_ADMIN') && user.status == 'APPROVED'" mat-raised-button color="warn"
+        (click)="onDelete(user)">
         Delete user
       </button>
     </div>
+  </div>
+</div>
+
+<div class="modal" *ngIf="successMessage">
+  <div class="modal-content success">
+    <p>{{ successMessage }}</p>
+    <button (click)="onSuccessOk()">Ok</button>
+  </div>
+</div>
+
+<div class="modal" *ngIf="errorMessage">
+  <div class="modal-content error">
+    <p>{{ errorMessage }}</p>
+    <button (click)="onErrorClose()">Close</button>
   </div>
 </div>

@@ -15,16 +15,16 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UserInfoService implements UserDetailsService{
+public class UserInfoService implements UserDetailsService {
     private final UserRepository userRepository;
-    
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> userinfo = userRepository.findByEmail(username);
-        if(userinfo.isEmpty()) {
+        if (userinfo.isEmpty()) {
             throw new UsernameNotFoundException("User not found with email:" + username);
         }
-        
+
         return new UserInfoDetails(userinfo.get());
     }
 }

@@ -10,7 +10,10 @@ import { CommonModule } from "@angular/common";
     templateUrl: './update-book.component.html',
     styleUrls: ['./update-book.component.scss']
 })
-export class UpdateBookComponent{
+export class UpdateBookComponent {
+    successMessage: string | null = null;
+    errorMessage: string | null = null;
+
     updateBookForm: FormGroup;
     constructor(private fb: FormBuilder, private bookService: BookService, private router: Router, private route: ActivatedRoute) {
         this.updateBookForm = this.fb.group({
@@ -24,27 +27,37 @@ export class UpdateBookComponent{
     }
     onSubmit() {
 
-        console.log("Submit clicked, form value:", this.updateBookForm.value);
-        if(this.updateBookForm.valid) {
+        if (this.updateBookForm.valid) {
             const { ...formData } = this.updateBookForm.value;
             const id = Number(this.route.snapshot.paramMap.get('id'));
             const updateBook: any = {};
 
             Object.keys(formData).forEach(key => {
-                if(formData[key] !== null && formData[key] !== '') {
+                if (formData[key] !== null && formData[key] !== '') {
                     updateBook[key] = formData[key];
                 }
             });
 
-            this.bookService.updateBook(id, updateBook).subscribe ({
+            this.bookService.updateBook(id, updateBook).subscribe({
                 next: (data) => {
-                    console.log("Book updated successfully: ", data);
-                    this.router.navigate(['/books']);
+                    this.successMessage = "Book updated successfully.";
+                    this.errorMessage = null;
                 },
-                error: (err) => console.log('Error book updating. ', err)
+                error: (err) => {
+                    this.errorMessage = err.error.error;
+                    this.successMessage = null;
+                }
             });
         } else {
             console.warn("Form is invalid:", this.updateBookForm.errors, this.updateBookForm.value);
         }
+    }
+    onSuccessOk() {
+        this.successMessage = null;
+        this.router.navigate(['/books']);
+    }
+
+    onErrorClose() {
+        this.errorMessage = null;
     }
 }

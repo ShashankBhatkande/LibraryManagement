@@ -32,17 +32,19 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtAuthFilter jwtAuthFilter;
+
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, RoleHierarchy roleHierarchy) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http, RoleHierarchy roleHierarchy) throws Exception {
         return http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/login", "/auth/register").permitAll()
-                .requestMatchers(request -> "INTERNAL-SECRET".equals(request.getHeader("X-Internal-Key"))).permitAll()
-                .anyRequest().authenticated())
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-            .build();
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/login", "/auth/register").permitAll()
+                        .requestMatchers(request -> "INTERNAL-SECRET".equals(request.getHeader("X-Internal-Key")))
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
     @Bean
@@ -70,18 +72,17 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
     @Bean
     public RoleHierarchy roleHierarchy() {
-       return RoleHierarchyImpl.fromHierarchy("""
-            ROLE_ADMIN > ROLE_LIBRARIAN 
-            ROLE_LIBRARIAN > ROLE_USER
-        """);
+        return RoleHierarchyImpl.fromHierarchy("""
+                    ROLE_ADMIN > ROLE_LIBRARIAN
+                    ROLE_LIBRARIAN > ROLE_USER
+                """);
     }
-
 
     @Bean
     public DefaultMethodSecurityExpressionHandler expressionHandler(RoleHierarchy roleHierarchy) {

@@ -1,7 +1,7 @@
 package com.librarysystem.borrow.model;
 
 public enum BorrowStatus {
-    BORROWED, 
+    BORROWED,
     RETURNED,
     OVERDUE,
     RETURNCONFIRMED

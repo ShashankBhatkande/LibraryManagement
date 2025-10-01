@@ -26,7 +26,7 @@ public class User {
 
     private String firstname;
     private String lastname;
-    
+
     @Column(unique = true, nullable = false)
     private String email;
     private String mobile;
@@ -37,5 +37,5 @@ public class User {
     private String role;
 
     @Enumerated(EnumType.STRING)
-    private AccountStatus status= AccountStatus.PENDING;
+    private AccountStatus status = AccountStatus.PENDING;
 }

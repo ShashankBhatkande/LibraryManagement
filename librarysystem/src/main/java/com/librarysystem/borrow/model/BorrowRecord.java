@@ -38,7 +38,7 @@ public class BorrowRecord {
 
     @Enumerated
     private BorrowStatus borrowStatus = BorrowStatus.RETURNED;
-    
+
     private boolean finePaid = false;
     private LocalDate borrowDate;
     private LocalDate dueDate;

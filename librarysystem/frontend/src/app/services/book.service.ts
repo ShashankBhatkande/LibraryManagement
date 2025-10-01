@@ -7,21 +7,21 @@ import { Book } from '../models/book.model';
 export class BookService {
   private baseUrl = 'http://localhost:8080/user';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getAllBooks(): Observable<Book[]> {
+  getAllBooks(): Observable<any> {
     return this.http.get<Book[]>(`${this.baseUrl}/getBooks`);
   }
 
-  getGenres(): Observable<string[]> {
+  getGenres(): Observable<any> {
     return this.http.get<string[]>(`${this.baseUrl}/genres`);
   }
 
-  getAuthors(): Observable<string[]> {
+  getAuthors(): Observable<any> {
     return this.http.get<string[]>(`${this.baseUrl}/authors`);
   }
 
-  filterBooks(title: string, genres: string[], authors: string[]): Observable<Book[]> {
+  filterBooks(title: string, genres: string[], authors: string[]): Observable<any> {
     let params = new HttpParams();
     if (title) params = params.set('title', title);
     genres.forEach(g => params = params.append('genres', g));
@@ -30,7 +30,7 @@ export class BookService {
     return this.http.get<Book[]>(`${this.baseUrl}/search`, { params });
   }
 
-  saveBook(book: Book): Observable<Book> {
+  saveBook(book: Book): Observable<any> {
     return this.http.post<Book>(`${this.baseUrl}/saveBook`, book);
   }
 

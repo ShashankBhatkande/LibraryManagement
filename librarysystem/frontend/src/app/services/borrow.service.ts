@@ -6,33 +6,33 @@ import { BorrowRecord } from "../models/borrowrecord.model";
 
 @Injectable({ providedIn: 'root' })
 export class BorrowBookService {
-    constructor(private http: HttpClient){}
+    constructor(private http: HttpClient) { }
 
-    borrowBook(bookId: number): any {
+    borrowBook(bookId: number): Observable<any> {
         const token = localStorage.getItem('jwtToken');
-        if(!token) {
+        if (!token) {
             console.error("No token found");
             return EMPTY;
         }
         try {
             const decoded: any = jwtDecode(token);
-            const headers = new HttpHeaders().set("Authorization",`Bearer ${token}`);
+            const headers = new HttpHeaders().set("Authorization", `Bearer ${token}`);
 
             const body = {
                 username: decoded.sub,
                 bookId: bookId
             };
-            
+
             return this.http.patch(`http://localhost:8080/transactions/borrow`, body, { headers });
-        } catch(error) {
+        } catch (error) {
             console.error("Invalid token ", error);
             return EMPTY;
         }
     }
 
-    loadUserBorrowRecords(): Observable<BorrowRecord[]> {
+    loadUserBorrowRecords(): Observable<any> {
         const token = localStorage.getItem('jwtToken');
-        if(!token) {
+        if (!token) {
             console.error("No token found");
             return EMPTY
         }
@@ -40,18 +40,18 @@ export class BorrowBookService {
         return this.http.get<BorrowRecord[]>(`http://localhost:8080/transactions/getUserRecords`, { headers });
     }
 
-    loadBorrowRecords(): Observable<BorrowRecord[]> {
+    loadBorrowRecords(): Observable<any> {
         const token = localStorage.getItem('jwtToken');
-        if(!token) {
+        if (!token) {
             console.error("No token found");
             return EMPTY;
         }
         const headers = new HttpHeaders().set("Authorization", `Bearer ${token}`);
         return this.http.get<BorrowRecord[]>(`http://localhost:8080/transactions/getRecords`, { headers });
     }
-    returnBook(id: number): any {
+    returnBook(id: number): Observable<any> {
         const token = localStorage.getItem('jwtToken');
-        if(!token) {
+        if (!token) {
             console.error("No token found");
             return EMPTY;
         }
@@ -62,15 +62,15 @@ export class BorrowBookService {
             };
 
             return this.http.patch('http://localhost:8080/transactions/returnBook', body, { headers });
-        } catch(error) {
-            console.error("Invalid token: ",  error);
+        } catch (error) {
+            console.error("Invalid token: ", error);
             return EMPTY;
         }
     }
 
-    confirmReturn(id: number): any {
+    confirmReturn(id: number): Observable<any> {
         const token = localStorage.getItem('jwtToken');
-        if(!token) {
+        if (!token) {
             console.error("No Token found");
             return EMPTY;
         }
@@ -82,7 +82,7 @@ export class BorrowBookService {
             };
 
             return this.http.patch('http://localhost:8080/transactions/confirmReturn', body, { headers });
-        } catch(error) {
+        } catch (error) {
             console.error("Invalid token: ", error);
             return EMPTY;
         }

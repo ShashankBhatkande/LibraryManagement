@@ -41,12 +41,12 @@ public class JwtService {
 
     public String createToken(Map<String, Object> claims, String email) {
         return Jwts.builder()
-            .setClaims(claims)
-            .setSubject(email)
-            .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
-            .signWith(getSignKey(), SignatureAlgorithm.HS256)
-            .compact();
+                .setClaims(claims)
+                .setSubject(email)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     public Key getSignKey() {
@@ -67,20 +67,19 @@ public class JwtService {
         return extractAllClaims(token).getSubject();
     }
 
-
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-            .setSigningKey(getSignKey())
-            .build()
-            .parseClaimsJws(token)
-            .getBody();
+                .setSigningKey(getSignKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     public Collection<? extends GrantedAuthority> getAuthorities(String token) {
         Claims claims = extractAllClaims(token);
         List<String> roles = claims.get("roles", List.class);
         return roles.stream()
-            .map(SimpleGrantedAuthority::new)
-            .toList();
+                .map(SimpleGrantedAuthority::new)
+                .toList();
     }
 }

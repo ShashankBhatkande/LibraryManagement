@@ -9,4 +9,17 @@
         <p><strong>Returned Date:</strong> {{ br.returnDate }}</p>
         <button *ngIf="br.borrowStatus === 'BORROWED'" (click)="onReturn(br)">Return</button>
     </div>
+    <div class="modal" *ngIf="successMessage">
+        <div class="modal-content success">
+            <p>{{ successMessage }}</p>
+            <button (click)="onSuccessOk()">Ok</button>
+        </div>
+    </div>
+
+    <div class="modal" *ngIf="errorMessage">
+        <div class="modal-content error">
+            <p>{{ errorMessage }}</p>
+            <button (click)="onErrorClose()">Close</button>
+        </div>
+    </div>
 </div>

@@ -14,8 +14,15 @@
     </form>
 
     <hr>
-     <div class="register-link">
-         <span>Don't have an account?</span>
-         <a routerLink="/register">Register</a>
-     </div>
+    <div class="register-link">
+        <span>Don't have an account?</span>
+        <a routerLink="/register">Register</a>
+    </div>
+
+    <div class="modal" *ngIf="errorMessage">
+        <div class="modal-content error">
+            <p>{{ errorMessage }}</p>
+            <button (click)="onErrorRetry()">Retry</button>
+        </div>
+    </div>
 </div>

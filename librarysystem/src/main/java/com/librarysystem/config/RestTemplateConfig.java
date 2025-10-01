@@ -16,7 +16,7 @@ public class RestTemplateConfig {
 
         restTemplate.getInterceptors().add((request, body, execution) -> {
             String token = TokenUtils.getCurrentToken();
-            if(token != null) {
+            if (token != null) {
                 request.getHeaders().add("Authorization", "Bearer " + token);
             }
             return execution.execute(request, body);

@@ -12,10 +12,13 @@ import { RoleService } from "../../services/role.service";
     templateUrl: './show-user.component.html',
     styleUrl: './show-user.component.scss'
 })
-export class ShowUserComponent implements OnInit{
-    constructor(private userService: UserService, public roleService: RoleService){}
+export class ShowUserComponent implements OnInit {
+    constructor(private userService: UserService, public roleService: RoleService) { }
     users: User[] = [];
     statusControl = new FormControl('');
+
+    successMessage: string | null = null;
+    errorMessage: string | null = null;
 
     status: string = '';
 
@@ -28,28 +31,50 @@ export class ShowUserComponent implements OnInit{
     }
 
     onApprove(user: User) {
-        console.log("Approving User");
-        this.userService.approveUser(user.id).subscribe ({
-            next: ()=> {
-                alert("User Approved");
-                this.loadAllUsers();
-            }, 
-            error:() => {
-                alert(`Error approving user.`);
+        this.userService.approveUser(user.id).subscribe({
+            next: (res) => {
+                this.successMessage = "User approved.";
+                this.errorMessage = null;
+            },
+            error: (err) => {
+                this.errorMessage = err.error.error;
+                this.successMessage = null;
             }
         });
     }
 
     onDelete(user: User) {
-        console.log("Approving User");
-        this.userService.rejectUser(user.id).subscribe ({
-            next: ()=> {
-                alert("User Rejected");
-                this.loadAllUsers();
-            }, 
-            error:() => {
-                alert(`Error approving user.`);
+        this.userService.deleteUser(user.id).subscribe({
+            next: () => {
+                this.successMessage = "User deleted.";
+                this.errorMessage = null;
+            },
+            error: (err) => {
+                this.errorMessage = err.error.error;
+                this.successMessage = null;
             }
         });
+    }
+
+    onReject(user: User) {
+        this.userService.deleteUser(user.id).subscribe({
+            next: () => {
+                this.successMessage = "User rejected.";
+                this.errorMessage = null;
+            },
+            error: (err) => {
+                this.errorMessage = err.error.error;
+                this.successMessage = null;
+            }
+        });
+    }
+
+    onSuccessOk() {
+        this.successMessage = null;
+        this.loadAllUsers();
+    }
+
+    onErrorClose() {
+        this.errorMessage = null;
     }
 }

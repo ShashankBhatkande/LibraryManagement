@@ -12,7 +12,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { RoleService } from '../../services/role.service';
 import { BorrowBookService } from '../../services/borrow.service';
 
@@ -29,16 +29,23 @@ import { BorrowBookService } from '../../services/borrow.service';
 })
 export class BookListComponent implements OnInit {
   books: Book[] = [];
+  genres: string[] = [];
+  authors: string[] = [];
+
+  successMessage: string | null = null;
+  errorMessage: string | null = null;
+  confirmMessage: string | null = null;
+  
+  bookToDelete: Book | null = null;
+  
   viewMode: 'grid' | 'list' = 'grid';
   username: string = '';
+
   searchControl = new FormControl('');
   genreControl = new FormControl<string[]>([]);
   authorControl = new FormControl<string[]>([]);
 
-  genres: string[] = [];
-  authors: string[] = [];
-
-  constructor(private bookService: BookService, public roleService: RoleService, public borrowBookService: BorrowBookService) {}
+  constructor(private bookService: BookService, public roleService: RoleService, public borrowBookService: BorrowBookService, private router: Router) { }
 
   ngOnInit(): void {
     const email = localStorage.getItem('userEmail');
@@ -82,31 +89,56 @@ export class BookListComponent implements OnInit {
   }
 
   onDelete(book: Book) {
-    console.log("Deleting book ", book);
-    if(confirm(`Are you sure you want to delete "${book.title}"?`)) {
-      this.bookService.deleteBook(book.id).subscribe({
+    this.confirmMessage = `Are you sure you want to delete "${book.title}"?`;
+    this.bookToDelete = book;
+  }
+
+  onBorrow(book: Book) {
+    this.borrowBookService.borrowBook(book.id).subscribe({
+      next: (res: any) => {
+        this.successMessage = "Book Borrowed Successfully.";
+        this.errorMessage = null;
+      },
+      error: (err: any) => {
+        this.errorMessage = err.error.error || "Failed to borrow.";
+        this.successMessage = null;
+      }
+    })
+  }
+
+  onSuccessOk() {
+    this.successMessage = null;
+    this.loadAllBooks();
+  }
+
+  onErrorClose() {
+    this.errorMessage = null;
+    this.loadAllBooks();
+  }
+
+  onConfirmYes() {
+    if (this.bookToDelete) {
+      this.bookService.deleteBook(this.bookToDelete.id).subscribe({
         next: () => {
-          alert(`"${book.title}" deleted Successfully`);
+          this.successMessage = "Book Deleted Successfully.";
+          this.errorMessage = null;
           this.loadAllBooks();
           this.loadAllAuthors();
           this.loadAllGenres();
         },
         error: (err) => {
-          alert(`Error deleting book.`);
+          this.errorMessage = err.error.error || "Error deleting book.";
+          this.successMessage = null;
         }
       });
     }
+    this.confirmMessage = null;
+    this.bookToDelete = null;
   }
 
-  onBorrow(book: Book) {
-    console.log("Borrowing book ", book);
-    this.borrowBookService.borrowBook(book.id).subscribe({
-      next: () => {
-        this.loadAllBooks();
-      },
-      error: (err: any) => {
-        console.error("Borrow failed", err.error)
-      }
-    })
+  onConfirmNo() {
+    this.confirmMessage = null;
+    this.bookToDelete = null;
   }
+
 }

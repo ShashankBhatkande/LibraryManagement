@@ -2,6 +2,7 @@ package com.librarysystem.user.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,63 +31,110 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/saveUser")
-    public User saveUser(@RequestBody User user) {
-        return userService.saveUser(user);
+    public ResponseEntity<Map<String, String>> saveUser(@RequestBody User user) {
+        try {
+            userService.saveUser(user);
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User saved successfully."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Error Saving user"));
+        }
     }
 
     @GetMapping("/getUsers")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<User> getAllUsers() {
-        return userService.fetchAllUsers();
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            List<User> users = userService.fetchAllUsers();
+            return ResponseEntity.ok(users);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Something went wrong."));
+        }
     }
 
     @GetMapping("/getBooks")
-    public List<Books> getAllBooks() {
-        return userService.fetchBooksForUser();
+    public ResponseEntity<?> getAllBooks() {
+        try {
+            List<Books> books = userService.fetchBooksForUser();
+            return ResponseEntity.ok(books);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Something went wrong."));
+        }
     }
 
     @GetMapping("/genres")
-    public List<String> getAllGenres() {
-        return userService.fetchGenres();
+    public ResponseEntity<?> getAllGenres() {
+        try {
+            List<String> genres = userService.fetchGenres();
+            return ResponseEntity.ok(genres);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Something went wrong."));
+        }
     }
 
     @GetMapping("/authors")
-    public List<String> getAllAuthors() {
-        return userService.fetchAuthors();
+    public ResponseEntity<?> getAllAuthors() {
+        try {
+            List<String> authors = userService.fetchAuthors();
+            return ResponseEntity.ok(authors);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Something went wrong."));
+        }
     }
+
     @PostMapping("/saveBook")
     @PreAuthorize("hasRole('LIBRARIAN')")
-    public void saveBook(@RequestBody Books book) {
-        userService.saveBook(book);
+    public ResponseEntity<Map<String, String>> saveBook(@RequestBody Books book) {
+        try {
+            userService.saveBook(book);
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Book saved successfully."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Something went wrong."));
+        }
     }
-    
+
     @GetMapping("/search")
-    public List<Books> searchBooks(@RequestParam(required = false) String title, @RequestParam(required = false) Optional<List<String>> genres, @RequestParam(required = false) Optional<List<String>> authors) {
-        return userService.searchBooks(title, genres, authors);
+    public ResponseEntity<?> searchBooks(@RequestParam(required = false) String title,
+            @RequestParam(required = false) Optional<List<String>> genres,
+            @RequestParam(required = false) Optional<List<String>> authors) {
+        try {
+            List<Books> books = userService.searchBooks(title, genres, authors);
+            return ResponseEntity.ok(books);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Something went wrong."));
+        }
     }
 
     @PatchMapping("/updateBook")
     @PreAuthorize("hasRole('LIBRARIAN')")
-    public ResponseEntity<Map<String, String>> updateBook(@RequestParam Long id, @RequestBody Map<String, Object> updates) {
-        log.info("Update book log inside User Controller with id {}", id);
-        ResponseEntity<String> response = userService.updateBook(id, updates);
-        if(response.getStatusCode().is2xxSuccessful()) {
+    public ResponseEntity<Map<String, String>> updateBook(@RequestParam Long id,
+            @RequestBody Map<String, Object> updates) {
+        try {
+            userService.updateBook(id, updates);
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Book updated successfully."));
-        } else {
-            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Book not Found"));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Book not Found"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Something went wrong."));
         }
     }
 
     @DeleteMapping("/deleteBook")
     @PreAuthorize("hasRole('LIBRARIAN')")
     public ResponseEntity<Map<String, String>> deleteBook(@RequestParam Long id) {
-        ResponseEntity<String> response = userService.deleteBook(id);
-        if(response.getStatusCode().is2xxSuccessful()) {
+        try {
+            userService.deleteBook(id);
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Book Deleted Successfully"));
-        } else if(response.getStatusCode().is4xxClientError()) {
-            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Book not Found"));
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Bad Request"));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Book not Found"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Bad Request"));
         }
     }
 }

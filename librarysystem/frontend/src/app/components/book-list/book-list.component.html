@@ -105,3 +105,24 @@
     </div>
   </mat-sidenav-content>
 </mat-sidenav-container>
+
+<div class="modal" *ngIf="successMessage">
+  <div class="modal-content success">
+    <p>{{ successMessage }}</p>
+    <button (click)="onSuccessOk()">Ok</button>
+  </div>
+</div>
+
+<div class="modal" *ngIf="errorMessage">
+  <div class="modal-content error">
+    <p>{{ errorMessage }}</p>
+    <button (click)="onErrorClose()">Close</button>
+  </div>
+</div>
+<div class="modal" *ngIf="confirmMessage">
+  <div class="modal-content confirm">
+    <p>{{ confirmMessage }}</p>
+    <button (click)="onConfirmYes()">Yes</button>
+    <button (click)="onConfirmNo()">No</button>
+  </div>
+</div>

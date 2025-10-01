@@ -2,25 +2,26 @@ import { Component } from "@angular/core";
 import { FormBuilder, FormsModule } from "@angular/forms";
 import { Router, RouterModule } from "@angular/router";
 import { AuthService } from "../../services/auth.service";
+import { CommonModule } from "@angular/common";
 
 @Component({
     standalone: true,
-    imports: [ FormsModule, RouterModule ],
+    imports: [FormsModule, RouterModule, CommonModule],
     templateUrl: './login-user.component.html',
     styleUrls: ['/login-user.component.scss']
 })
 export class LoginUserComponent {
     email = '';
     password = '';
+    errorMessage: string | null = null;
 
-    constructor(private authService: AuthService, private router: Router){}
+    constructor(private authService: AuthService, private router: Router) { }
 
     onLogin(): void {
-        const credentials = { email: this.email, password: this.password}
-
-        this.authService.login(this.email, this.password).subscribe ({
+        const credentials = { email: this.email, password: this.password }
+        this.authService.login(this.email, this.password).subscribe({
             next: (res) => {
-                if(res && res.token) {
+                if (res && res.token) {
                     // Clear previous login data
                     localStorage.removeItem("jwtToken");
                     localStorage.removeItem("userEmail");
@@ -34,9 +35,13 @@ export class LoginUserComponent {
                 }
             },
             error: (err) => {
-                console.error('Error login: ', err);
-                alert(err.error.error);
+                this.errorMessage = err.error.error || "Invalid Credentials.";
             }
         });
+    }
+
+    onErrorRetry() {
+        this.errorMessage = null;
+        this.router.navigate(['/']);
     }
 }
