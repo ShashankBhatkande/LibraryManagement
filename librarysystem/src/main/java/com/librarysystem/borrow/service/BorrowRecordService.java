@@ -129,7 +129,7 @@ public class BorrowRecordService {
         Long userId = findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("User not found."))
                 .getId();
-
+        updateFine(userId);
         return borrowRecordRepository.findByUserId(userId).stream()
                 .map(record -> ResponseRecord.builder()
                         .id(record.getId())
@@ -163,6 +163,11 @@ public class BorrowRecordService {
     }
 
     public List<ResponseRecord> getReturnedBookUserRecords() {
+        List<BorrowRecord> records = borrowRecordRepository.findAll();
+        for(BorrowRecord record: records) {
+            updateFine(record.getUser().getId());
+        }
+
         return borrowRecordRepository.findAll().stream()
                 .map(record -> ResponseRecord.builder()
                         .id(record.getId())
