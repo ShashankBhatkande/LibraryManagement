@@ -83,7 +83,7 @@ public class BorrowRecordService {
         borrowRecord.setUser(user);
         borrowRecord.setBook(book);
         borrowRecord.setBorrowDate(LocalDate.now());
-        borrowRecord.setDueDate(LocalDate.now().plusDays(30));
+        borrowRecord.setDueDate(LocalDate.now().plusDays(1));
         borrowRecord.setFine(BigDecimal.ZERO);
         borrowRecord.setBorrowStatus(BorrowStatus.BORROWED);
 
@@ -108,7 +108,7 @@ public class BorrowRecordService {
             if (currRecord.getReturnDate() == null) {
                 if (LocalDate.now().isAfter(currRecord.getDueDate())) {
                     currRecord.setFine(calculateFine(currRecord));
-                    currRecord.setBorrowStatus(BorrowStatus.OVERDUE);
+                    if(!currRecord.getBorrowStatus().equals(BorrowStatus.RETURNED))currRecord.setBorrowStatus(BorrowStatus.OVERDUE);
                 } else if (!LocalDate.now().isAfter(currRecord.getDueDate())) {
                     currRecord.setFine(BigDecimal.ZERO);
                 }
