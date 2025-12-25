@@ -7,7 +7,7 @@
         <p><strong>Borrow Date:</strong> {{ br.borrowDate }}</p>
         <p><strong>Due Date:</strong> {{ br.dueDate }}</p>
         <p><strong>Returned Date:</strong> {{ br.returnDate }}</p>
-        <button *ngIf="br.borrowStatus === 'BORROWED'" (click)="onReturn(br)">Return</button>
+        <button *ngIf="br.borrowStatus === 'BORROWED' || br.borrowStatus === 'OVERDUE'" (click)="onReturn(br)">Return</button>
     </div>
     <div class="modal" *ngIf="successMessage">
         <div class="modal-content success">
