@@ -43,6 +43,7 @@ export class ViewMyProfileComponent implements OnInit {
     onSuccessOk() {
         this.successMessage = null;
         this.router.navigate(['/view-myprofile']);
+        this.loadUserBorrowRecords();
     }
 
     onErrorClose() {

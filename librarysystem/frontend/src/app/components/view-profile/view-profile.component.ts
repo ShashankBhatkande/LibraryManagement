@@ -27,9 +27,8 @@ export class ViewProfileComponent implements OnInit{
         this.borrowBookService.loadBorrowRecords().subscribe(data => this.borrowRecords = data);
     }
 
-   onConfirm(borrwoRecord: BorrowRecord): any {
-        console.log(borrwoRecord.id);
-        this.borrowBookService.confirmReturn(borrwoRecord.id) 
+   onConfirm(borrowRecord: BorrowRecord): any {
+        this.borrowBookService.confirmReturn(borrowRecord.id) 
         .subscribe({
                 next: (data) => {
                     this.successMessage = "Book returned.";
