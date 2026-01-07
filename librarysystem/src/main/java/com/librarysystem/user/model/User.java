@@ -37,5 +37,6 @@ public class User {
     private String role;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private AccountStatus status = AccountStatus.PENDING;
 }

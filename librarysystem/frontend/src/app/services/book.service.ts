@@ -5,12 +5,12 @@ import { Book } from '../models/book.model';
 
 @Injectable({ providedIn: 'root' })
 export class BookService {
-  private baseUrl = 'http://localhost:8080/user';
+  private baseUrl = 'http://localhost:8080/books';
 
   constructor(private http: HttpClient) { }
 
   getAllBooks(): Observable<any> {
-    return this.http.get<Book[]>(`${this.baseUrl}/getBooks`);
+    return this.http.get<Book[]>(`${this.baseUrl}/get-books`);
   }
 
   getGenres(): Observable<any> {
@@ -31,16 +31,16 @@ export class BookService {
   }
 
   saveBook(book: Book): Observable<any> {
-    return this.http.post<Book>(`${this.baseUrl}/saveBook`, book);
+    return this.http.post<Book>(`${this.baseUrl}/save-book`, book);
   }
 
   updateBook(id: number, book: Book): Observable<any> {
     let params = new HttpParams().set("id", id);
-    return this.http.patch(`${this.baseUrl}/updateBook`, book, { params });
+    return this.http.patch(`${this.baseUrl}/update-book`, book, { params });
   }
 
   deleteBook(id: number): Observable<any> {
     let params = new HttpParams().set("id", id);
-    return this.http.delete(`${this.baseUrl}/deleteBook`, { params });
+    return this.http.delete(`${this.baseUrl}/delete-book`, { params });
   }
 }

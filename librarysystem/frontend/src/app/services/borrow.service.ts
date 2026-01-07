@@ -37,7 +37,7 @@ export class BorrowBookService {
             return EMPTY
         }
         const headers = new HttpHeaders().set("Authorization", `Bearer ${token}`);
-        return this.http.get<BorrowRecord[]>(`http://localhost:8080/transactions/getUserRecords`, { headers });
+        return this.http.get<BorrowRecord[]>(`http://localhost:8080/transactions/user-records`, { headers });
     }
 
     loadBorrowRecords(): Observable<any> {
@@ -47,7 +47,7 @@ export class BorrowBookService {
             return EMPTY;
         }
         const headers = new HttpHeaders().set("Authorization", `Bearer ${token}`);
-        return this.http.get<BorrowRecord[]>(`http://localhost:8080/transactions/getRecords`, { headers });
+        return this.http.get<BorrowRecord[]>(`http://localhost:8080/transactions`, { headers });
     }
     returnBook(id: number): Observable<any> {
         const token = localStorage.getItem('jwtToken');
@@ -61,7 +61,7 @@ export class BorrowBookService {
                 id: id
             };
 
-            return this.http.patch('http://localhost:8080/transactions/returnBook', body, { headers });
+            return this.http.patch('http://localhost:8080/transactions/return-book', body, { headers });
         } catch (error) {
             console.error("Invalid token: ", error);
             return EMPTY;
@@ -81,7 +81,7 @@ export class BorrowBookService {
                 id: id
             };
 
-            return this.http.patch('http://localhost:8080/transactions/confirmReturn', body, { headers });
+            return this.http.patch('http://localhost:8080/transactions/confirm-return', body, { headers });
         } catch (error) {
             console.error("Invalid token: ", error);
             return EMPTY;

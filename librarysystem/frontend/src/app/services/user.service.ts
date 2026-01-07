@@ -8,7 +8,7 @@ export class UserService {
     constructor(private http: HttpClient) { }
 
     getAllUsers(): Observable<any> {
-        return this.http.get<User[]>(`http://localhost:8080/user/getUsers`);
+        return this.http.get<User[]>(`http://localhost:8080/user/get-users`);
     }
 
     approveUser(id: number): Observable<any> {

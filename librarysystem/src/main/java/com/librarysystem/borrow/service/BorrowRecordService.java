@@ -2,12 +2,10 @@ package com.librarysystem.borrow.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.librarysystem.book.model.Books;
 import com.librarysystem.book.repository.BookRepository;
@@ -18,7 +16,7 @@ import com.librarysystem.borrow.model.BorrowRecord;
 import com.librarysystem.borrow.model.BorrowStatus;
 import com.librarysystem.borrow.repository.BorrowRecordRepository;
 import com.librarysystem.user.model.User;
-import com.librarysystem.user.repository.UserRepository;
+import com.librarysystem.user.service.UserService;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import lombok.RequiredArgsConstructor;
@@ -28,56 +26,25 @@ import lombok.RequiredArgsConstructor;
 public class BorrowRecordService {
     private final BorrowRecordRepository borrowRecordRepository;
     private final BookRepository bookRepository;
-    private final UserRepository userRepository;
+    private final FineService fineService;
+    private final UserService userService;
+    private final BorrowPolicyService borrowPolicyService;
+    private final BorrowRecordMapper mapper;
 
-    public Optional<BorrowRecord> getBorrowRecord(Long id) {
-        return borrowRecordRepository.findById(id);
-    }
-
-    private boolean checkAvailability(Long bookId) {
-        Optional<Books> book = bookRepository.findById(bookId);
-        return book.get().getQuantity() > 0;
-    }
-
-    private BigDecimal getTotalFine(Long userId) {
-        updateFine(userId);
-        return borrowRecordRepository.getTotalFine(userId);
-    }
-
-    private int getNumberOfBorrowedBooks(Long userId) {
-        return borrowRecordRepository.countByUserIdAndBorrowStatusIn(userId,
-                List.of(BorrowStatus.BORROWED, BorrowStatus.OVERDUE, BorrowStatus.RETURNED));
-
-    }
-
+    @Transactional
     public void borrowBook(BorrowRequest request) {
-        String email = request.username();
+        User user = userService.getUserByEmail(request.username());
+        Long userId = user.getId();
         Long bookId = request.bookId();
 
+        borrowPolicyService.validateBorrow(userId, bookId);
+
         Books book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new NoSuchElementException("Book is not present."));
-        User user = findByEmail(email)
-                .orElseThrow(() -> new NoSuchElementException("User not found."));
-
-        Long userId = user.getId();
-
-        boolean available = checkAvailability(bookId);
-        BigDecimal fine = getTotalFine(userId);
-        int noBorrowedBooks = getNumberOfBorrowedBooks(userId);
-
-        if (!available) {
-            throw new IllegalStateException("Book is out of stock.");
-        } else if (fine.compareTo(new BigDecimal("500")) > 0) {
-            throw new IllegalStateException("Please pay existing fine before borrowing.");
-        } else if (noBorrowedBooks >= 5) {
-            throw new IllegalStateException("You can not borrow more than 5 books.");
-        }
+                .orElseThrow(() -> new IllegalStateException("Book not found."));
 
         // Decrease quantity
         book.setQuantity(book.getQuantity() - 1);
         bookRepository.save(book);
-
-        updateFine(userId);
 
         BorrowRecord borrowRecord = new BorrowRecord();
         borrowRecord.setUser(user);
@@ -90,98 +57,42 @@ public class BorrowRecordService {
         borrowRecordRepository.save(borrowRecord);
     }
 
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    private BigDecimal calculateFine(BorrowRecord record) {
-        if (LocalDate.now().isAfter(record.getDueDate())) {
-            long overDueDays = ChronoUnit.DAYS.between(record.getDueDate(), LocalDate.now());
-            return BigDecimal.valueOf(overDueDays * 50);
-        }
-        return BigDecimal.ZERO;
-    }
-
-    private void updateFine(Long userId) {
-        List<BorrowRecord> records = borrowRecordRepository.findByUserId(userId);
-        for (BorrowRecord currRecord : records) {
-            if (currRecord.getReturnDate() == null) {
-                if (LocalDate.now().isAfter(currRecord.getDueDate())) {
-                    currRecord.setFine(calculateFine(currRecord));
-                    if(!currRecord.getBorrowStatus().equals(BorrowStatus.RETURNED))currRecord.setBorrowStatus(BorrowStatus.OVERDUE);
-                } else if (!LocalDate.now().isAfter(currRecord.getDueDate())) {
-                    currRecord.setFine(BigDecimal.ZERO);
-                }
-            }
-            borrowRecordRepository.save(currRecord);
-        }
-    }
-
     public void returnBook(Long borrowId) {
-        BorrowRecord record = borrowRecordRepository.findById(borrowId).get();
+        BorrowRecord record = borrowRecordRepository.findById(borrowId)
+            .orElseThrow(() -> new IllegalStateException("Borrow record not found."));
 
         record.setBorrowStatus(BorrowStatus.RETURNED);
         borrowRecordRepository.save(record);
     }
 
     public List<ResponseRecord> getUserRecords(UserDetails userDetails) {
-        String email = userDetails.getUsername();
-        Long userId = findByEmail(email)
-                .orElseThrow(() -> new NoSuchElementException("User not found."))
-                .getId();
+        User user = userService.getUserByEmail(userDetails.getUsername());
+        fineService.updateFineForUser(user.getId());
 
-        updateFine(userId);
-        return borrowRecordRepository.findByUserId(userId).stream()
-
-                .map(record -> ResponseRecord.builder()
-                        .id(record.getId())
-                        .title(record.getBook().getTitle())
-                        .borrowStatus(record.getBorrowStatus().name())
-                        .borrowDate(record.getBorrowDate())
-                        .returnDate(record.getReturnDate())
-                        .dueDate(record.getDueDate())
-                        .fine(record.getFine())
-                        .paidFine(record.isFinePaid())
-                        .build())
-                .toList();
+        return borrowRecordRepository.findByUserId(user.getId()).stream()
+            .map(mapper::toResponse)
+            .toList();
 
     }
 
+    @Transactional
     public void confirmReturn(ReturnBookRequest request) {
-        BorrowRecord record = getBorrowRecord(request.id())
+        BorrowRecord record = borrowRecordRepository.findById(request.id())
                 .orElseThrow(() -> new IllegalStateException("Returning invalid borrow."));
 
-        Long bookId = record.getBook().getId();
-
-        Books book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new IllegalStateException("Returning invalid book."));
+        Books book = record.getBook();
         book.setQuantity(book.getQuantity() + 1);
         bookRepository.save(book);
 
         record.setReturnDate(LocalDate.now());
         record.setBorrowStatus(BorrowStatus.RETURNCONFIRMED);
-        record.setFine(calculateFine(record));
+        record.setFine(fineService.calculateFine(record));
         borrowRecordRepository.save(record);
     }
 
     public List<ResponseRecord> getReturnedBookUserRecords() {
-        List<BorrowRecord> records = borrowRecordRepository.findAll();
-        for(BorrowRecord record: records) {
-            updateFine(record.getUser().getId());
-        }
-
         return borrowRecordRepository.findAll().stream()
-
-                .map(record -> ResponseRecord.builder()
-                        .id(record.getId())
-                        .title(record.getBook().getTitle())
-                        .borrowStatus(record.getBorrowStatus().name())
-                        .borrowDate(record.getBorrowDate())
-                        .returnDate(record.getReturnDate())
-                        .dueDate(record.getDueDate())
-                        .fine(record.getFine())
-                        .paidFine(record.isFinePaid())
-                        .build())
-                .toList();
+            .map(mapper::toResponse)
+            .toList();
     }
 }

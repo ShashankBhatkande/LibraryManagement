@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 public class BookController {
     private final BookService bookService;
 
-    @PostMapping("/saveBook")
+    @PostMapping("/save-book")
+    @PreAuthorize("hasRole('LIBRARIAN')")
     public ResponseEntity<Map<String, String>> saveBook(@RequestBody Books book) {
         try {
             bookService.saveBook(book);
@@ -40,7 +42,7 @@ public class BookController {
         }
     }
 
-    @GetMapping("/getBooks")
+    @GetMapping("/get-books")
     public ResponseEntity<?> getAllBooks() {
         try {
             List<Books> books = bookService.getAllBooks();
@@ -73,7 +75,7 @@ public class BookController {
         }
     }
 
-    @GetMapping("/searchBooks")
+    @GetMapping("/search-books")
     public ResponseEntity<?> searchBooks(@RequestParam(required = false) String title,
             @RequestParam(required = false) List<String> genres,
             @RequestParam(required = false) List<String> authors) {
@@ -86,7 +88,8 @@ public class BookController {
         }
     }
 
-    @PatchMapping("/updateBook")
+    @PatchMapping("/update-book")
+    @PreAuthorize("hasRole('LIBRARIAN')")
     public ResponseEntity<Map<String, String>> updateBook(@RequestParam Long id,
             @RequestBody BookUpdateRequest updates) {
         try {
@@ -103,6 +106,7 @@ public class BookController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('LIBRARIAN')")
     public ResponseEntity<Map<String, String>> deleteBook(@PathVariable Long id) {
         try {
             bookService.deleteBook(id);

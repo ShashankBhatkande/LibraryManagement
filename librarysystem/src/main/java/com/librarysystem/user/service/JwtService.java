@@ -25,10 +25,8 @@ import lombok.RequiredArgsConstructor;
 public class JwtService {
     @Value("${jwt.secret}")
     private String SECRET;
-    private final UserInfoService userInfoService;
 
-    public String generateToken(String email) {
-        UserDetails userDetails = userInfoService.loadUserByUsername(email);
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
 
         List<String> roles = userDetails.getAuthorities().stream()
@@ -36,7 +34,7 @@ public class JwtService {
                 .toList();
 
         claims.put("roles", roles);
-        return createToken(claims, email);
+        return createToken(claims, userDetails.getUsername());
     }
 
     public String createToken(Map<String, Object> claims, String email) {
@@ -55,8 +53,8 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(extractAllClaims(token));
+        Claims claims = extractAllClaims(token);
+        return (userDetails.getUsername().equals(claims.getSubject())) && !isTokenExpired(claims);
     }
 
     private boolean isTokenExpired(Claims claims) {
@@ -67,7 +65,7 @@ public class JwtService {
         return extractAllClaims(token).getSubject();
     }
 
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSignKey())
                 .build()
@@ -77,7 +75,16 @@ public class JwtService {
 
     public Collection<? extends GrantedAuthority> getAuthorities(String token) {
         Claims claims = extractAllClaims(token);
-        List<String> roles = claims.get("roles", List.class);
+        Object rolesObj = claims.get("roles");
+        List<String> roles;
+        if (rolesObj instanceof List<?>) {
+            roles = ((List<?>) rolesObj).stream()
+                    .filter(role -> role instanceof String)
+                    .map(role -> (String) role)
+                    .toList();
+        } else {
+            roles = List.of();
+        }
         return roles.stream()
                 .map(SimpleGrantedAuthority::new)
                 .toList();
